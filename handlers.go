@@ -8,7 +8,8 @@ import (
 
 type Handler interface {
 	PathToId(req *http.Request) (int, error)
-	NewItem() interface{}
+	New() interface{}
+	NewPartial() interface{}
 	Get(id int) (interface{}, error)
 	Update(interface{}, interface{}) error
 	Add(interface{}) error

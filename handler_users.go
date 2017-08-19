@@ -1,9 +1,11 @@
 package highloadcup
 
 import (
-	"net/http"
 	"errors"
+	"net/http"
 )
+
+// TODO: static errors
 
 type UsersHandler struct {
 	repo UsersRepo
@@ -17,8 +19,12 @@ func NewUsersHandler(repo UsersRepo) *UsersHandler {
 	}
 }
 
-func (h *UsersHandler) NewItem() interface{} {
+func (h *UsersHandler) New() interface{} {
 	return &User{}
+}
+
+func (h *UsersHandler) NewPartial() interface{} {
+	return &UserPartialRaw{}
 }
 
 func (h *UsersHandler) PathToId(req *http.Request) (int, error) {
@@ -31,22 +37,12 @@ func (h *UsersHandler) Get(id int) (interface{}, error) {
 
 func (h *UsersHandler) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*User)
-	source := theSource.(*User)
+	source := theSource.(*UserPartialRaw)
 
-	if source.Email != nil {
-		target.Email = source.Email
-	}
-	if source.FirstName != nil {
-		target.FirstName = source.FirstName
-	}
-	if source.LastName != nil {
-		target.LastName = source.LastName
-	}
-	if source.Gender != nil {
-		target.Gender = source.Gender
-	}
-	if source.BirthDate != nil {
-		target.BirthDate = source.BirthDate
+	target.UpdatePartial(source)
+	err := target.Validate()
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -55,22 +51,9 @@ func (h *UsersHandler) Update(theTarget interface{}, theSource interface{}) erro
 func (h *UsersHandler) Add(theTarget interface{}) error {
 	target := theTarget.(*User)
 
-	// TODO: static errors
-
-	if target.Email == nil {
-		return errors.New("empty email")
-	}
-	if target.FirstName == nil {
-		return errors.New("empty first_name")
-	}
-	if target.LastName == nil {
-		return errors.New("empty last_name")
-	}
-	if target.Gender == nil {
-		return errors.New("empty gender")
-	}
-	if target.BirthDate == nil {
-		return errors.New("empty birth_date")
+	_, err := h.repo.Get(target.Id)
+	if err == nil {
+		return errors.New("user with id exists")
 	}
 
 	h.repo.Save(target)

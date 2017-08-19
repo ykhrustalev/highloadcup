@@ -92,7 +92,7 @@ func (r *Router) Update(handler Handler, w http.ResponseWriter, req *http.Reques
 		return
 	}
 
-	source := handler.NewItem()
+	source := handler.NewPartial()
 
 	decoder := json.NewDecoder(req.Body)
 	err = decoder.Decode(source)
@@ -112,7 +112,7 @@ func (r *Router) Update(handler Handler, w http.ResponseWriter, req *http.Reques
 }
 
 func (r *Router) Add(handler Handler, w http.ResponseWriter, req *http.Request) {
-	target := handler.NewItem()
+	target := handler.New()
 
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(target)
@@ -143,5 +143,4 @@ func (r *Router) writeResponse(w http.ResponseWriter, contents []byte) {
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(contents)))
 	w.WriteHeader(http.StatusOK)
 	w.Write(contents)
-
 }

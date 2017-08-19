@@ -16,7 +16,7 @@ func NewUsersRepoImpl() *UsersRepoImpl {
 }
 
 func (r *UsersRepoImpl) Save(u *User) error {
-	r.items[*u.Id] = u
+	r.items[u.Id] = u
 	return nil
 }
 
