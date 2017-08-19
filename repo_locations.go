@@ -1,8 +1,8 @@
 package highloadcup
 
 type LocationsRepo interface {
-	Save(*User) error
-	Get(int) (*User, error)
+	Save(*Location) error
+	Get(int) (*Location, error)
 }
 
 type LocationsRepoImpl struct {

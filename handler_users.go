@@ -1,11 +1,8 @@
 package highloadcup
 
 import (
-	"errors"
 	"net/http"
 )
-
-// TODO: static errors
 
 type UsersHandler struct {
 	repo UsersRepo
@@ -53,7 +50,12 @@ func (h *UsersHandler) Add(theTarget interface{}) error {
 
 	_, err := h.repo.Get(target.Id)
 	if err == nil {
-		return errors.New("user with id exists")
+		return ErrorObjectExists
+	}
+
+	err = target.Validate()
+	if err != nil {
+		return err
 	}
 
 	h.repo.Save(target)

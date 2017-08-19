@@ -6,8 +6,8 @@ import (
 )
 
 func Server() {
-	userRepo := NewUsersRepoImpl()
-	userRepo.Save(&User{
+	usersRepo := NewUsersRepoImpl()
+	usersRepo.Save(&User{
 		Id:        1,
 		Email:     "email@goo.com",
 		FirstName: "first",
@@ -15,9 +15,16 @@ func Server() {
 		Gender:    "f",
 		BirthDate: time.Now(),
 	})
-	usersHandler := NewUsersHandler(userRepo)
+	usersHandler := NewUsersHandler(usersRepo)
 
-	router := NewRouter(usersHandler)
+
+	locationsRepo := NewLocationsRepoImpl()
+	locationsHandler := NewLocationsHandler(locationsRepo)
+
+	visitsRepo := NewVisitsRepoImpl()
+	visitsHandler := NewVisitsHandler(visitsRepo)
+
+	router := NewRouter(usersHandler, locationsHandler, visitsHandler)
 
 	http.HandleFunc(usersHandler.path, router.Handle)
 	http.ListenAndServe(":8080", nil)

@@ -8,12 +8,16 @@ import (
 )
 
 type Router struct {
-	users *UsersHandler
+	users     *UsersHandler
+	locations *LocationsHandler
+	visits    *VisitsHandler
 }
 
-func NewRouter(users *UsersHandler) *Router {
+func NewRouter(users *UsersHandler, locations *LocationsHandler, visits *VisitsHandler) *Router {
 	return &Router{
-		users: users,
+		users:     users,
+		locations: locations,
+		visits:    visits,
 	}
 }
 
