@@ -3,24 +3,25 @@ package highloadcup
 import (
 	"encoding/json"
 	"time"
+	"errors"
 )
 
 type User struct {
-	Id        int       `json:"id"`         // уникальный внешний идентификатор пользователя. Устанавливается тестирующей системой и используется затем, для проверки ответов сервера. 32-разрядное целое число.
-	Email     string    `json:"email"`      // адрес электронной почты пользователя. Тип - unicode-строка длиной до 100 символов. Гарантируется уникальность.
-	FirstName string    `json:"first_name"` // имя и фамилия соответственно. Тип - unicode-строки длиной до 50 символов.
-	LastName  string    `json:"last_name"`
-	Gender    string    `json:"gender"`     // unicode-строка "m" означает мужской пол, а "f" - женский.
-	BirthDate time.Time `json:"birth_date"` // дата рождения, записанная как число секунд от начала UNIX-эпохи по UTC (другими словами - это timestamp). Ограничено снизу 01.01.1930 и сверху 01.01.1999-ым.
+	Id        *int       `json:"id"`         // уникальный внешний идентификатор пользователя. Устанавливается тестирующей системой и используется затем, для проверки ответов сервера. 32-разрядное целое число.
+	Email     *string    `json:"email"`      // адрес электронной почты пользователя. Тип - unicode-строка длиной до 100 символов. Гарантируется уникальность.
+	FirstName *string    `json:"first_name"` // имя и фамилия соответственно. Тип - unicode-строки длиной до 50 символов.
+	LastName  *string    `json:"last_name"`
+	Gender    *string    `json:"gender"`     // unicode-строка "m" означает мужской пол, а "f" - женский.
+	BirthDate *time.Time `json:"birth_date"` // дата рождения, записанная как число секунд от начала UNIX-эпохи по UTC (другими словами - это timestamp). Ограничено снизу 01.01.1930 и сверху 01.01.1999-ым.
 }
 
 func (u *User) MarshalJSON() ([]byte, error) {
 	type aux struct {
-		Id        int    `json:"id"`
-		Email     string `json:"email"`
-		FirstName string `json:"first_name"`
-		LastName  string `json:"last_name"`
-		Gender    string `json:"gender"`
+		Id        *int    `json:"id"`
+		Email     *string `json:"email"`
+		FirstName *string `json:"first_name"`
+		LastName  *string `json:"last_name"`
+		Gender    *string `json:"gender"`
 		BirthDate int64  `json:"birth_date"`
 	}
 
@@ -34,6 +35,40 @@ func (u *User) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(obj)
+}
+
+func (u *User) UnmarshalJSON(b []byte) error {
+	type aux struct {
+		Id        *int    `json:"id"`
+		Email     *string `json:"email"`
+		FirstName *string `json:"first_name"`
+		LastName  *string `json:"last_name"`
+		Gender    *string `json:"gender"`
+		BirthDate int64   `json:"birth_date"`
+	}
+
+	var obj aux
+	err := json.Unmarshal(b, &obj)
+	if err != nil {
+		return err
+	}
+
+	u.Id = obj.Id
+	u.Email = obj.Email
+	u.FirstName = obj.FirstName
+	u.LastName = obj.LastName
+
+	if obj.Gender != nil {
+		if *obj.Gender != "m" && *obj.Gender != "f" {
+			return errors.New("gender unexpected")
+		}
+	}
+	u.Gender = obj.Gender
+
+	tm := time.Unix(obj.BirthDate, 0)
+	u.BirthDate = &tm
+
+	return nil
 }
 
 type Location struct {
