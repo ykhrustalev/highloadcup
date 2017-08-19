@@ -30,7 +30,7 @@ func Server() {
 
 	router := NewRouter(usersHandler, locationsHandler, visitsHandler)
 
-	http.HandleFunc(usersHandler.path, router.Handle)
+	http.HandleFunc("/", router.Handle)
 
 	port := os.Getenv("PORT")
 	if port == "" {
