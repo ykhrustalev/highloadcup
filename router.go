@@ -67,7 +67,7 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	http.Error(w, "method not supported", http.StatusBadRequest)
+	http.Error(w, "method not supported", http.StatusNotFound)
 }
 
 func (r *Router) Get(handler Handler, w http.ResponseWriter, req *http.Request) {
