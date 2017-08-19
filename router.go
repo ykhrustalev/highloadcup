@@ -25,8 +25,6 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 	path := req.URL.Path
 	method := req.Method
 
-	fmt.Println(path, method)
-
 	if method == "POST" {
 		if strings.HasSuffix(path, "/new") {
 			if strings.HasPrefix(path, "/users/") {
