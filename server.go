@@ -3,6 +3,7 @@ package highloadcup
 import (
 	"net/http"
 	"os"
+	"fmt"
 )
 
 func Server() {
@@ -26,5 +27,10 @@ func Server() {
 	router := NewRouter(usersHandler, locationsHandler, visitsHandler)
 
 	http.HandleFunc(usersHandler.path, router.Handle)
-	http.ListenAndServe(":8080", nil)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }
