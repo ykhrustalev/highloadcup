@@ -72,7 +72,7 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 func (r *Router) Get(handler Handler, w http.ResponseWriter, req *http.Request) {
 	id, err := handler.PathToId(req)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
