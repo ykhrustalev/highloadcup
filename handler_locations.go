@@ -6,13 +6,13 @@ import (
 
 type LocationsHandler struct {
 	repo LocationsRepo
-	path string
+	Path string
 }
 
 func NewLocationsHandler(repo LocationsRepo) *LocationsHandler {
 	return &LocationsHandler{
 		repo: repo,
-		path: "/locations/",
+		Path: "/locations/",
 	}
 }
 
@@ -25,7 +25,7 @@ func (h *LocationsHandler) NewPartial() interface{} {
 }
 
 func (h *LocationsHandler) PathToId(req *http.Request) (int, error) {
-	return pathToId(req, h.path)
+	return pathToId(req, h.Path)
 }
 
 func (h *LocationsHandler) Get(id int) (interface{}, error) {

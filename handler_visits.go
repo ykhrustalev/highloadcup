@@ -6,13 +6,13 @@ import (
 
 type VisitsHandler struct {
 	repo VisitsRepo
-	path string
+	Path string
 }
 
 func NewVisitsHandler(repo VisitsRepo) *VisitsHandler {
 	return &VisitsHandler{
 		repo: repo,
-		path: "/visits/",
+		Path: "/visits/",
 	}
 }
 
@@ -25,7 +25,7 @@ func (h *VisitsHandler) NewPartial() interface{} {
 }
 
 func (h *VisitsHandler) PathToId(req *http.Request) (int, error) {
-	return pathToId(req, h.path)
+	return pathToId(req, h.Path)
 }
 
 func (h *VisitsHandler) Get(id int) (interface{}, error) {

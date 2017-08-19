@@ -6,13 +6,13 @@ import (
 
 type UsersHandler struct {
 	repo UsersRepo
-	path string
+	Path string
 }
 
 func NewUsersHandler(repo UsersRepo) *UsersHandler {
 	return &UsersHandler{
 		repo: repo,
-		path: "/users/",
+		Path: "/users/",
 	}
 }
 
@@ -25,7 +25,7 @@ func (h *UsersHandler) NewPartial() interface{} {
 }
 
 func (h *UsersHandler) PathToId(req *http.Request) (int, error) {
-	return pathToId(req, h.path)
+	return pathToId(req, h.Path)
 }
 
 func (h *UsersHandler) Get(id int) (interface{}, error) {

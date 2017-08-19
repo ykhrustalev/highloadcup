@@ -27,41 +27,42 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 
 	if method == "POST" {
 		if strings.HasSuffix(path, "/new") {
-			if strings.HasPrefix(path, "/users/") {
+			if strings.HasPrefix(path, r.users.Path) {
 				r.Add(r.users, w, req)
 				return
-			} else if strings.HasPrefix(path, "/locations/") {
+			} else if strings.HasPrefix(path, r.locations.Path) {
 				r.Add(r.locations, w, req)
 				return
-			} else if strings.HasPrefix(path, "/visits/") {
+			} else if strings.HasPrefix(path, r.visits.Path) {
 				r.Add(r.visits, w, req)
 				return
 			}
 		} else {
-			if strings.HasPrefix(path, "/users/") {
+			if strings.HasPrefix(path, r.users.Path) {
 				r.Update(r.users, w, req)
 				return
-			} else if strings.HasPrefix(path, "/locations/") {
+			} else if strings.HasPrefix(path, r.locations.Path) {
 				r.Update(r.locations, w, req)
 				return
-			} else if strings.HasPrefix(path, "/visits/") {
+			} else if strings.HasPrefix(path, r.visits.Path) {
 				r.Update(r.visits, w, req)
 				return
 			}
 		}
 	} else if method == "GET" {
-		if strings.HasPrefix(path, "/users/") {
+		if strings.HasPrefix(path, r.users.Path) {
 			if strings.HasSuffix(path, "/visited") {
 
 			} else {
 				r.Get(r.users, w, req)
 				return
 			}
-		} else if strings.HasPrefix(path, "/locations/") {
+		} else if strings.HasPrefix(path, r.locations.Path) {
 			r.Get(r.locations, w, req)
 			return
-		} else if strings.HasPrefix(path, "/visits/") {
+		} else if strings.HasPrefix(path, r.visits.Path) {
 			r.Get(r.visits, w, req)
+			return
 		}
 	}
 
