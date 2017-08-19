@@ -3,6 +3,7 @@ package highloadcup
 type LocationsRepo interface {
 	Save(*Location) error
 	Get(int) (*Location, error)
+	Count() int
 }
 
 type LocationsRepoImpl struct {
@@ -26,4 +27,8 @@ func (r *LocationsRepoImpl) Get(id int) (*Location, error) {
 		return &item, nil
 	}
 	return nil, ErrorNotFound
+}
+
+func (r *LocationsRepoImpl) Count() int {
+	return len(r.items)
 }

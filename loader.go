@@ -36,6 +36,10 @@ func (l *Loader) Load(path string) error {
 		}
 	}
 
+	fmt.Printf("users: %d\n", l.users.Count())
+	fmt.Printf("location: %d\n", l.locations.Count())
+	fmt.Printf("vists: %d\n", l.visits.Count())
+
 	return nil
 }
 
@@ -48,7 +52,7 @@ type LocationsLoad struct {
 }
 
 type VisitsLoad struct {
-	Visits []Visit `json:"visit"`
+	Visits []Visit `json:"visits"`
 }
 
 func (l *Loader) loadFile(file *zip.File) error {

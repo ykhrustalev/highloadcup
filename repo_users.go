@@ -3,6 +3,7 @@ package highloadcup
 type UsersRepo interface {
 	Save(*User) error
 	Get(int) (*User, error)
+	Count() int
 }
 
 type UsersRepoImpl struct {
@@ -26,4 +27,8 @@ func (r *UsersRepoImpl) Get(id int) (*User, error) {
 		return &item, nil
 	}
 	return nil, ErrorNotFound
+}
+
+func (r *UsersRepoImpl) Count() int {
+	return len(r.items)
 }
