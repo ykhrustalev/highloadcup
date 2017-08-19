@@ -6,24 +6,24 @@ type LocationsRepo interface {
 }
 
 type LocationsRepoImpl struct {
-	items map[int]*Location
+	items map[int]Location
 }
 
 func NewLocationsRepoImpl() *LocationsRepoImpl {
 	return &LocationsRepoImpl{
-		items: make(map[int]*Location),
+		items: make(map[int]Location),
 	}
 }
 
-func (r *LocationsRepoImpl) Save(u *Location) error {
-	r.items[u.Id] = u
+func (r *LocationsRepoImpl) Save(item *Location) error {
+	r.items[item.Id] = *item
 	return nil
 }
 
 func (r *LocationsRepoImpl) Get(id int) (*Location, error) {
 	item, ok := r.items[id]
 	if ok {
-		return item, nil
+		return &item, nil
 	}
 	return nil, ErrorNotFound
 }

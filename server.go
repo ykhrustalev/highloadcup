@@ -2,27 +2,26 @@ package highloadcup
 
 import (
 	"net/http"
-	"time"
+	"os"
 )
 
 func Server() {
 	usersRepo := NewUsersRepoImpl()
-	usersRepo.Save(&User{
-		Id:        1,
-		Email:     "email@goo.com",
-		FirstName: "first",
-		LastName:  "last",
-		Gender:    "f",
-		BirthDate: time.Now(),
-	})
 	usersHandler := NewUsersHandler(usersRepo)
-
 
 	locationsRepo := NewLocationsRepoImpl()
 	locationsHandler := NewLocationsHandler(locationsRepo)
 
 	visitsRepo := NewVisitsRepoImpl()
 	visitsHandler := NewVisitsHandler(visitsRepo)
+
+	path := os.Getenv("DATA_PATH")
+	if path == "" {
+		path = "/tmp/data/data.zip "
+	}
+
+	loader := NewLoader(usersRepo, locationsRepo, visitsRepo)
+	loader.Load(path)
 
 	router := NewRouter(usersHandler, locationsHandler, visitsHandler)
 

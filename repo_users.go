@@ -6,24 +6,24 @@ type UsersRepo interface {
 }
 
 type UsersRepoImpl struct {
-	items map[int]*User
+	items map[int]User
 }
 
 func NewUsersRepoImpl() *UsersRepoImpl {
 	return &UsersRepoImpl{
-		items: make(map[int]*User),
+		items: make(map[int]User),
 	}
 }
 
-func (r *UsersRepoImpl) Save(u *User) error {
-	r.items[u.Id] = u
+func (r *UsersRepoImpl) Save(item *User) error {
+	r.items[item.Id] = *item
 	return nil
 }
 
 func (r *UsersRepoImpl) Get(id int) (*User, error) {
 	item, ok := r.items[id]
 	if ok {
-		return item, nil
+		return &item, nil
 	}
 	return nil, ErrorNotFound
 }
