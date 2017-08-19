@@ -33,34 +33,37 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 				r.Add(r.users, w, req)
 				return
 			} else if strings.HasPrefix(path, "/locations/") {
-
+				r.Add(r.locations, w, req)
+				return
 			} else if strings.HasPrefix(path, "/visits/") {
-
+				r.Add(r.visits, w, req)
+				return
 			}
 		} else {
 			if strings.HasPrefix(path, "/users/") {
 				r.Update(r.users, w, req)
 				return
 			} else if strings.HasPrefix(path, "/locations/") {
-
+				r.Update(r.locations, w, req)
+				return
 			} else if strings.HasPrefix(path, "/visits/") {
-
+				r.Update(r.visits, w, req)
+				return
 			}
 		}
 	} else if method == "GET" {
 		if strings.HasPrefix(path, "/users/") {
-
 			if strings.HasSuffix(path, "/visited") {
 
 			} else {
 				r.Get(r.users, w, req)
 				return
 			}
-
 		} else if strings.HasPrefix(path, "/locations/") {
-
+			r.Get(r.locations, w, req)
+			return
 		} else if strings.HasPrefix(path, "/visits/") {
-
+			r.Get(r.visits, w, req)
 		}
 	}
 
