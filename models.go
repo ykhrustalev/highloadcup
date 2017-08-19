@@ -36,7 +36,6 @@ func (u *User) MarshalJSON() ([]byte, error) {
 	return json.Marshal(obj)
 }
 
-
 type Location struct {
 	Id       int    `json:"id"`       // уникальный внешний id достопримечательности. Устанавливается тестирующей системой. 32-разрядное целое число.
 	Place    string `json:"place"`    // описание достопримечательности. Текстовое поле неограниченной длины.
