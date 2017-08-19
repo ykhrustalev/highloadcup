@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"fmt"
+	"log"
 )
 
 func Server() {
@@ -18,11 +19,14 @@ func Server() {
 
 	path := os.Getenv("DATA_PATH")
 	if path == "" {
-		path = "/tmp/data/data.zip "
+		path = "/tmp/data/data.zip"
 	}
 
 	loader := NewLoader(usersRepo, locationsRepo, visitsRepo)
-	loader.Load(path)
+	err := loader.Load(path)
+	if err != nil {
+		log.Fatalf("failed to load data, %v", err)
+	}
 
 	router := NewRouter(usersHandler, locationsHandler, visitsHandler)
 
@@ -32,5 +36,7 @@ func Server() {
 	if port == "" {
 		port = "8080"
 	}
+
+	fmt.Printf("listen on %s", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }
