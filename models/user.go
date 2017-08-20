@@ -42,14 +42,14 @@ func (u *User) Validate() error {
 	if u.Id == 0 {
 		return ErrorInvalidId
 	}
-	if len(u.FirstName) > 50 {
-		return ErrorStringTooLong
+	if len(u.FirstName) == 0 || len(u.FirstName) > 50 {
+		return ErrorStringOutOfRange
 	}
-	if len(u.LastName) > 50 {
-		return ErrorStringTooLong
+	if len(u.LastName) == 0 || len(u.LastName) > 50 {
+		return ErrorStringOutOfRange
 	}
-	if len(u.Email) > 100 {
-		return ErrorStringTooLong
+	if len(u.Email) == 0 || len(u.Email) > 100 {
+		return ErrorStringOutOfRange
 	}
 
 	_, err := ValidateGender(u.Gender)

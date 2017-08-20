@@ -14,11 +14,14 @@ func (u *Location) Validate() error {
 	if u.Id == 0 {
 		return ErrorInvalidId
 	}
-	if len(u.Country) > 50 {
-		return ErrorStringTooLong
+	if len(u.Place) == 0 {
+		return ErrorStringOutOfRange
 	}
-	if len(u.City) > 50 {
-		return ErrorStringTooLong
+	if len(u.Country) == 0 || len(u.Country) > 50 {
+		return ErrorStringOutOfRange
+	}
+	if len(u.City) == 0 || len(u.City) > 50 {
+		return ErrorStringOutOfRange
 	}
 	return nil
 }
