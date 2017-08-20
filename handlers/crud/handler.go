@@ -102,7 +102,7 @@ func (r *Handler) Update(adapter Adapter, w http.ResponseWriter, req *http.Reque
 	}
 
 	target := adapter.Get(id)
-	if err != nil {
+	if target == nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
