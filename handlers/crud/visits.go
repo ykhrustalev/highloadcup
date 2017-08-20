@@ -28,7 +28,7 @@ func (h *Visits) New() interface{} {
 }
 
 func (h *Visits) NewPartial() interface{} {
-	return &models.VisitPartialRaw{}
+	return &models.VisitPartial{}
 }
 
 func (h *Visits) PathToId(req *http.Request) (int, error) {
@@ -41,7 +41,7 @@ func (h *Visits) Get(id int) interface{} {
 
 func (h *Visits) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.Visit)
-	source := theSource.(*models.VisitPartialRaw)
+	source := theSource.(*models.VisitPartial)
 
 	target.UpdatePartial(source)
 	err := target.Validate()

@@ -6,26 +6,19 @@ import (
 )
 
 type Visit struct {
-	Id        int       `json:"id"`         // уникальный внешний id посещения. Устанавливается тестирующей системой. 32-разрядное целое число.
-	Location  int       `json:"location"`   // id достопримечательности. 32-разрядное целое число.
-	User      int       `json:"user"`       // id путешественника. 32-разрядное целое число.
-	VisitedAt time.Time `json:"visited_at"` // дата посещения, timestamp с ограничениями: снизу 01.01.2000, а сверху 01.01.2015.
-	Mark      int       `json:"mark"`       // оценка посещения от 0 до 5 включительно. Целое число.
+	Id        int       // уникальный внешний id посещения. Устанавливается тестирующей системой. 32-разрядное целое число.
+	Location  int       // id достопримечательности. 32-разрядное целое число.
+	User      int       // id путешественника. 32-разрядное целое число.
+	VisitedAt time.Time // дата посещения, timestamp с ограничениями: снизу 01.01.2000, а сверху 01.01.2015.
+	Mark      int       // оценка посещения от 0 до 5 включительно. Целое число.
 }
 
-type VisitRaw struct {
+type visitRaw struct {
 	Id        int   `json:"id"`
 	Location  int   `json:"location"`
 	User      int   `json:"user"`
 	VisitedAt int64 `json:"visited_at"`
 	Mark      int   `json:"mark"`
-}
-
-type VisitPartialRaw struct {
-	Location  *int   `json:"location"`
-	User      *int   `json:"user"`
-	VisitedAt *int64 `json:"visited_at"`
-	Mark      *int   `json:"mark"`
 }
 
 func (u *Visit) SetVisitedAt(value int64) {
@@ -36,7 +29,7 @@ func (u *Visit) Validate() error {
 	return nil
 }
 
-func (u *Visit) UpdatePartial(source *VisitPartialRaw) error {
+func (u *Visit) UpdatePartial(source *VisitPartial) error {
 
 	if source.Location != nil {
 		u.Location = *source.Location
@@ -55,7 +48,7 @@ func (u *Visit) UpdatePartial(source *VisitPartialRaw) error {
 }
 
 func (u *Visit) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&VisitRaw{
+	return json.Marshal(&visitRaw{
 		u.Id,
 		u.Location,
 		u.User,
@@ -65,7 +58,7 @@ func (u *Visit) MarshalJSON() ([]byte, error) {
 }
 
 func (u *Visit) UnmarshalJSON(b []byte) error {
-	var obj VisitRaw
+	var obj visitRaw
 	err := json.Unmarshal(b, &obj)
 	if err != nil {
 		return err
@@ -79,6 +72,61 @@ func (u *Visit) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
+
+// Partial
+
+type VisitPartial struct {
+	Location  *int
+	User      *int
+	VisitedAt *int64
+	Mark      *int
+}
+
+func (u *VisitPartial) UnmarshalJSON(b []byte) error {
+
+	obj := map[string]interface{}{}
+
+	err := json.Unmarshal(b, &obj)
+	if err != nil {
+		return err
+	}
+
+	value, ok := obj["location"]
+	if ok {
+		u.Location, err = GetNonNullIntP(value)
+		if err != nil {
+			return err
+		}
+	}
+
+	value, ok = obj["user"]
+	if ok {
+		u.User, err = GetNonNullIntP(value)
+		if err != nil {
+			return err
+		}
+	}
+
+	value, ok = obj["visited_at"]
+	if ok {
+		u.VisitedAt, err = GetNonNullInt64P(value)
+		if err != nil {
+			return err
+		}
+	}
+
+	value, ok = obj["mark"]
+	if ok {
+		u.Mark, err = GetNonNullIntP(value)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Sorting
 
 type VisitsByVisitDate []*Visit
 

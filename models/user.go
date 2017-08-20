@@ -14,7 +14,7 @@ type User struct {
 	BirthDate time.Time // дата рождения, записанная как число секунд от начала UNIX-эпохи по UTC (другими словами - это timestamp). Ограничено снизу 01.01.1930 и сверху 01.01.1999-ым.
 }
 
-type UserRaw struct {
+type userRaw struct {
 	Id        int    `json:"id"`
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
@@ -54,7 +54,7 @@ func (u *User) UpdatePartial(source *UserPartial) error {
 }
 
 func (u *User) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&UserRaw{
+	return json.Marshal(&userRaw{
 		u.Id,
 		u.Email,
 		u.FirstName,
@@ -65,7 +65,7 @@ func (u *User) MarshalJSON() ([]byte, error) {
 }
 
 func (u *User) UnmarshalJSON(b []byte) error {
-	var obj UserRaw
+	var obj userRaw
 	err := json.Unmarshal(b, &obj)
 	if err != nil {
 		return err
