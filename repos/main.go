@@ -3,6 +3,7 @@ package repos
 import (
 	"github.com/ykhrustalev/highloadcup/collections"
 	"github.com/ykhrustalev/highloadcup/models"
+	"sync"
 )
 
 type Repo struct {
@@ -12,6 +13,8 @@ type Repo struct {
 	visitsByLocation   map[int][]*models.Visit
 	locations          map[int]*models.Location
 	locationsByCountry map[string]*collections.IntSet
+
+	mx sync.RWMutex
 }
 
 func NewRepo() *Repo {

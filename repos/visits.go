@@ -6,6 +6,9 @@ import (
 )
 
 func (r *Repo) SaveVisit(item *models.Visit) error {
+	r.mx.Lock()
+	defer r.mx.Unlock()
+
 	r.visits[item.Id] = item
 	r.storeVisitByUser(item)
 	r.storeVisitByLocation(item)
@@ -35,17 +38,26 @@ func (r *Repo) storeVisitByLocation(item *models.Visit) {
 }
 
 func (r *Repo) GetVisit(id int) (*models.Visit, bool) {
+	r.mx.RLock()
+	defer r.mx.RUnlock()
+
 	item, ok := r.visits[id]
 	return item, ok
 }
 
 func (r *Repo) CountVisits() int {
+	r.mx.RLock()
+	defer r.mx.RUnlock()
+
 	return len(r.visits)
 }
 
 var emptyVisitsForUser = make([]*models.VisitForUser, 0)
 
 func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*models.VisitForUser {
+	r.mx.RLock()
+	defer r.mx.RUnlock()
+
 	// TODO: mutex
 	visits, ok := r.visitsByUser[userId]
 	if !ok {
@@ -106,6 +118,9 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 }
 
 func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFilter) float32 {
+	r.mx.RLock()
+	defer r.mx.RUnlock()
+
 	visits, ok := r.visitsByLocation[locationId]
 	if !ok {
 		return 0.0
