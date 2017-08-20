@@ -1,13 +1,17 @@
 package highloadcup
 
 import (
+	"fmt"
+	"github.com/ykhrustalev/highloadcup/data_loader"
+	"github.com/ykhrustalev/highloadcup/repos"
+	"log"
 	"net/http"
 	"os"
-	"fmt"
-	"log"
 )
 
 func Server() {
+	repo := repos.NewRepo()
+
 	usersRepo := NewUsersRepoImpl()
 	usersHandler := NewUsersHandler(usersRepo)
 
@@ -22,7 +26,7 @@ func Server() {
 		path = "/tmp/data/data.zip"
 	}
 
-	loader := NewLoader(usersRepo, locationsRepo, visitsRepo)
+	loader := data_loader.NewLoader(repo)
 	err := loader.Load(path)
 	if err != nil {
 		log.Fatalf("failed to load data, %v", err)

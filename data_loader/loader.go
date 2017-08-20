@@ -1,4 +1,4 @@
-package highloadcup
+package data_loader
 
 import (
 	"archive/zip"
@@ -7,19 +7,16 @@ import (
 	"io"
 	"strings"
 	"github.com/ykhrustalev/highloadcup/models"
+	"github.com/ykhrustalev/highloadcup/repos"
 )
 
 type Loader struct {
-	users     UsersRepo
-	locations LocationsRepo
-	visits    VisitsRepo
+	repo *repos.Repo
 }
 
-func NewLoader(users UsersRepo, locations LocationsRepo, visits VisitsRepo) *Loader {
+func NewLoader(repo *repos.Repo) *Loader {
 	return &Loader{
-		users:     users,
-		locations: locations,
-		visits:    visits,
+		repo: repo,
 	}
 }
 
@@ -37,9 +34,9 @@ func (l *Loader) Load(path string) error {
 		}
 	}
 
-	fmt.Printf("users: %d\n", l.users.Count())
-	fmt.Printf("location: %d\n", l.locations.Count())
-	fmt.Printf("vists: %d\n", l.visits.Count())
+	fmt.Printf("users: %d\n", l.repo.CountUsers())
+	fmt.Printf("location: %d\n", l.repo.CountLocations())
+	fmt.Printf("vists: %d\n", l.repo.CountVisits())
 
 	return nil
 }
@@ -86,7 +83,7 @@ func (l *Loader) loadUsers(reader io.Reader) error {
 	}
 
 	for _, item := range obj.Users {
-		l.users.Save(item)
+		l.repo.SaveUser(item)
 	}
 
 	return nil
@@ -101,7 +98,7 @@ func (l *Loader) loadLocations(reader io.Reader) error {
 	}
 
 	for _, item := range obj.Locations {
-		l.locations.Save(item)
+		l.repo.SaveLocation(item)
 	}
 
 	return nil
@@ -116,7 +113,7 @@ func (l *Loader) loadVisits(reader io.Reader) error {
 	}
 
 	for _, item := range obj.Visits {
-		l.visits.Save(item)
+		l.repo.SaveVisit(item)
 	}
 
 	return nil
