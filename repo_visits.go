@@ -7,24 +7,24 @@ type VisitsRepo interface {
 }
 
 type VisitsRepoImpl struct {
-	items map[int]Visit
+	items map[int]*Visit
 }
 
 func NewVisitsRepoImpl() *VisitsRepoImpl {
 	return &VisitsRepoImpl{
-		items: make(map[int]Visit),
+		items: make(map[int]*Visit),
 	}
 }
 
 func (r *VisitsRepoImpl) Save(item *Visit) error {
-	r.items[item.Id] = *item
+	r.items[item.Id] = item
 	return nil
 }
 
 func (r *VisitsRepoImpl) Get(id int) (*Visit, error) {
 	item, ok := r.items[id]
 	if ok {
-		return &item, nil
+		return item, nil
 	}
 	return nil, ErrorNotFound
 }

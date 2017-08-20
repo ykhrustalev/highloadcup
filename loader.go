@@ -44,15 +44,15 @@ func (l *Loader) Load(path string) error {
 }
 
 type UsersLoad struct {
-	Users []User `json:"users"`
+	Users []*User `json:"users"`
 }
 
 type LocationsLoad struct {
-	Locations []Location `json:"locations"`
+	Locations []*Location `json:"locations"`
 }
 
 type VisitsLoad struct {
-	Visits []Visit `json:"visits"`
+	Visits []*Visit `json:"visits"`
 }
 
 func (l *Loader) loadFile(file *zip.File) error {
@@ -85,7 +85,7 @@ func (l *Loader) loadUsers(reader io.Reader) error {
 	}
 
 	for _, item := range obj.Users {
-		l.users.Save(&item)
+		l.users.Save(item)
 	}
 
 	return nil
@@ -100,7 +100,7 @@ func (l *Loader) loadLocations(reader io.Reader) error {
 	}
 
 	for _, item := range obj.Locations {
-		l.locations.Save(&item)
+		l.locations.Save(item)
 	}
 
 	return nil
@@ -115,7 +115,7 @@ func (l *Loader) loadVisits(reader io.Reader) error {
 	}
 
 	for _, item := range obj.Visits {
-		l.visits.Save(&item)
+		l.visits.Save(item)
 	}
 
 	return nil
