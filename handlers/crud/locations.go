@@ -35,7 +35,7 @@ func (h *Locations) PathToId(req *http.Request) (int, error) {
 	return helpers.PathToIdPrefix(req, h.prefix)
 }
 
-func (h *Locations) Get(id int) interface{} {
+func (h *Locations) Get(id int) (interface{}, bool) {
 	return h.repo.GetLocation(id)
 }
 
@@ -55,8 +55,8 @@ func (h *Locations) Update(theTarget interface{}, theSource interface{}) error {
 func (h *Locations) Add(theTarget interface{}) error {
 	target := theTarget.(*models.Location)
 
-	obj := h.repo.GetLocation(target.Id)
-	if obj != nil {
+	_, found := h.repo.GetLocation(target.Id)
+	if found {
 		return ErrorObjectExists
 	}
 

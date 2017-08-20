@@ -9,12 +9,9 @@ func (r *Repo) SaveUser(item *models.User) error {
 	return nil
 }
 
-func (r *Repo) GetUser(id int) *models.User {
+func (r *Repo) GetUser(id int) (*models.User, bool) {
 	item, ok := r.users[id]
-	if ok {
-		return item
-	}
-	return nil
+	return item, ok
 }
 
 func (r *Repo) CountUsers() int {

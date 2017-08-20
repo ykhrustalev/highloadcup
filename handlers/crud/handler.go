@@ -13,7 +13,7 @@ type Adapter interface {
 	PathToId(req *http.Request) (int, error)
 	New() interface{}
 	NewPartial() interface{}
-	Get(id int) interface{}
+	Get(id int) (interface{}, bool)
 	Update(interface{}, interface{}) error
 	Add(interface{}) error
 }
@@ -85,8 +85,8 @@ func (r *Handler) Get(adapter Adapter, w http.ResponseWriter, req *http.Request)
 		return
 	}
 
-	item := adapter.Get(id)
-	if item == nil {
+	item, found := adapter.Get(id)
+	if !found {
 		http.Error(w, ErrorNotFound.Error(), http.StatusNotFound)
 		return
 	}
@@ -101,9 +101,9 @@ func (r *Handler) Update(adapter Adapter, w http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	target := adapter.Get(id)
-	if target == nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+	target, found := adapter.Get(id)
+	if !found {
+		http.Error(w, ErrorNotFound.Error(), http.StatusNotFound)
 		return
 	}
 

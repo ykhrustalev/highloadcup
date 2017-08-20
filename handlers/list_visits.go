@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/ykhrustalev/highloadcup/handlers/crud"
 	"github.com/ykhrustalev/highloadcup/handlers/helpers"
 	"github.com/ykhrustalev/highloadcup/models"
 	"github.com/ykhrustalev/highloadcup/repos"
@@ -53,9 +54,9 @@ func (h *ListVisitsHandler) doHandle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user := h.repo.GetUser(id)
-	if user == nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+	user, found := h.repo.GetUser(id)
+	if !found {
+		http.Error(w, crud.ErrorNotFound.Error(), http.StatusNotFound)
 		return
 	}
 
