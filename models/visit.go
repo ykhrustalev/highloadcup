@@ -22,7 +22,6 @@ type VisitRaw struct {
 }
 
 type VisitPartialRaw struct {
-	Id        *int   `json:"id"`
 	Location  *int   `json:"location"`
 	User      *int   `json:"user"`
 	VisitedAt *int64 `json:"visited_at"`
