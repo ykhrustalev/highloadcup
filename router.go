@@ -51,8 +51,9 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 		}
 	} else if method == "GET" {
 		if strings.HasPrefix(path, r.users.Path) {
-			if strings.HasSuffix(path, "/visited") {
-
+			if strings.HasSuffix(path, r.users.VisitsPath) {
+				r.ListVisits(w, req)
+				return
 			} else {
 				r.Get(r.users, w, req)
 				return
@@ -67,6 +68,45 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Error(w, "method not supported", http.StatusNotFound)
+}
+
+type VisitsResponse struct {
+	Visits []*VisitForUser `json:"visits"`
+}
+
+func (r *Router) ListVisits(w http.ResponseWriter, req *http.Request) {
+	id, err := r.users.PathToIdVisits(req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	user_, err := r.users.Get(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	values := req.URL.Query()
+	filters, err := VisitsFilterFromValues(&values)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user := user_.(*User)
+
+	visits := r.visits.Filter(user.Id, filters)
+
+	visitsForUser := make([]*VisitForUser, 0)
+	for _, visit := range visits {
+		visitsForUser = append(visitsForUser, visit.ToVisitForUser())
+	}
+	response := &VisitsResponse{
+		Visits: visitsForUser,
+	}
+
+	r.writeResponse(w, r.toJson(response))
 }
 
 func (r *Router) Get(handler Handler, w http.ResponseWriter, req *http.Request) {

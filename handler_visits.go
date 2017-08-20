@@ -62,3 +62,7 @@ func (h *VisitsHandler) Add(theTarget interface{}) error {
 
 	return nil
 }
+
+func (h *VisitsHandler) Filter(userId int, filters *VisitsFilter) []*Visit {
+	return h.repo.Filter(userId, filters)
+}

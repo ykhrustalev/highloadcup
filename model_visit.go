@@ -1,8 +1,10 @@
 package highloadcup
 
 import (
-	"time"
 	"encoding/json"
+	"net/url"
+	"strconv"
+	"time"
 )
 
 type Visit struct {
@@ -36,6 +38,14 @@ func (u *Visit) SetVisitedAt(value int64) {
 func (u *Visit) Validate() error {
 
 	return nil
+}
+
+func (u *Visit) ToVisitForUser() *VisitForUser {
+	return &VisitForUser{
+		Location:  u.Location,
+		VisitedAt: u.VisitedAt,
+		Mark:      u.Mark,
+	}
 }
 
 func (u *Visit) UpdatePartial(source *VisitPartialRaw) error {
@@ -80,4 +90,90 @@ func (u *Visit) UnmarshalJSON(b []byte) error {
 	u.Mark = obj.Mark
 
 	return nil
+}
+
+type VisitsFilter struct {
+	FromDate   *time.Time // посещения с visited_at > fromDate
+	ToDate     *time.Time // посещения с visited_at < toDate
+	Country    *string    // название страны, в которой находятся интересующие достопримечательности
+	ToDistance *int       // возвращать только те места, у которых расстояние от города меньше этого параметра
+}
+
+func VisitsFilterFromValues(values *url.Values) (*VisitsFilter, error) {
+
+	filter := &VisitsFilter{}
+
+	fromDate := values.Get("fromDate")
+	if fromDate != "" {
+		fromDateInt, err := strconv.ParseInt(fromDate, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		filter.SetFromDate(fromDateInt)
+	}
+
+	toDate := values.Get("toDate")
+	if toDate != "" {
+		toDateInt, err := strconv.ParseInt(toDate, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		filter.SetToDate(toDateInt)
+	}
+
+	country := values.Get("country")
+	if country != "" {
+		filter.Country = &country
+	}
+
+	toDistance := values.Get("toDistance")
+	if toDistance != "" {
+		toDistanceInt, err := strconv.Atoi(toDistance)
+		if err != nil {
+			return nil, err
+		}
+		filter.ToDistance = &toDistanceInt
+	}
+
+	return filter, nil
+}
+
+func (o *VisitsFilter) SetFromDate(value int64) {
+	tm := time.Unix(value, 0)
+	o.FromDate = &tm
+}
+
+func (o *VisitsFilter) SetToDate(value int64) {
+	tm := time.Unix(value, 0)
+	o.ToDate = &tm
+}
+
+func (o *VisitsFilter) Validate() error {
+	return nil
+}
+
+type VisitsByVisitDate []*Visit
+
+func (a VisitsByVisitDate) Len() int           { return len(a) }
+func (a VisitsByVisitDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a VisitsByVisitDate) Less(i, j int) bool { return a[i].VisitedAt.Before(a[j].VisitedAt) }
+
+type VisitForUser struct {
+	Location  int
+	VisitedAt time.Time
+	Mark      int
+}
+
+type VisitForUserRaw struct {
+	Location  int   `json:"location"`
+	VisitedAt int64 `json:"visited_at"`
+	Mark      int   `json:"mark"`
+}
+
+func (u *VisitForUser) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&VisitForUserRaw{
+		u.Location,
+		u.VisitedAt.Unix(),
+		u.Mark,
+	})
 }

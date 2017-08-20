@@ -14,7 +14,7 @@ func Server() {
 	locationsRepo := NewLocationsRepoImpl()
 	locationsHandler := NewLocationsHandler(locationsRepo)
 
-	visitsRepo := NewVisitsRepoImpl()
+	visitsRepo := NewVisitsRepoImpl(locationsRepo)
 	visitsHandler := NewVisitsHandler(visitsRepo)
 
 	path := os.Getenv("DATA_PATH")
