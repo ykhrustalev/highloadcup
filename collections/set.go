@@ -1,7 +1,15 @@
-package highloadcup
+package collections
 
 type IntSet struct {
 	set map[int]bool
+}
+
+var EmptyIntSet = IntSet{}
+
+func NewIntSet() *IntSet {
+	return &IntSet{
+		set: make(map[int]bool),
+	}
 }
 
 func (s *IntSet) Add(i int) bool {
