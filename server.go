@@ -7,19 +7,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"github.com/ykhrustalev/highloadcup/handlers"
+	"github.com/ykhrustalev/highloadcup/handlers/crud"
 )
 
 func Server() {
 	repo := repos.NewRepo()
-
-	usersRepo := NewUsersRepoImpl()
-	usersHandler := NewUsersHandler(usersRepo)
-
-	locationsRepo := NewLocationsRepoImpl()
-	locationsHandler := NewLocationsHandler(locationsRepo)
-
-	visitsRepo := NewVisitsRepoImpl(locationsRepo)
-	visitsHandler := NewVisitsHandler(visitsRepo)
 
 	path := os.Getenv("DATA_PATH")
 	if path == "" {
@@ -32,7 +25,10 @@ func Server() {
 		log.Fatalf("failed to load data, %v", err)
 	}
 
-	router := NewRouter(usersHandler, locationsHandler, visitsHandler)
+	router := NewRouter(
+		crud.NewHandler(repo),
+		handlers.NewListVisitsHandler(repo),
+	)
 
 	http.HandleFunc("/", router.Handle)
 
