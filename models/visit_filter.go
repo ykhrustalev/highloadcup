@@ -14,25 +14,24 @@ type VisitsFilter struct {
 }
 
 func VisitsFilterFromValues(values *url.Values) (*VisitsFilter, error) {
-
 	filter := &VisitsFilter{}
 
 	fromDate := values.Get("fromDate")
 	if fromDate != "" {
-		fromDateInt, err := strconv.ParseInt(fromDate, 10, 64)
+		values, err := strconv.ParseInt(fromDate, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		filter.SetFromDate(fromDateInt)
+		filter.SetFromDate(values)
 	}
 
 	toDate := values.Get("toDate")
 	if toDate != "" {
-		toDateInt, err := strconv.ParseInt(toDate, 10, 64)
+		value, err := strconv.ParseInt(toDate, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		filter.SetToDate(toDateInt)
+		filter.SetToDate(value)
 	}
 
 	country := values.Get("country")
