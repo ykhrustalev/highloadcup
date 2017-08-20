@@ -83,3 +83,10 @@ func GetNonNullInt64P(value interface{}) (*int64, error) {
 	val, err := GetNonNullInt64(value)
 	return &val, err
 }
+
+func ValidateGender(value string) (string, error) {
+	if value != "m" && value != "f" {
+		return "", ErrorInvalidGender
+	}
+	return value, nil
+}

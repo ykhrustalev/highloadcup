@@ -51,9 +51,12 @@ func (u *User) Validate() error {
 	if len(u.Email) > 100 {
 		return ErrorStringTooLong
 	}
-	if u.Gender != "m" && u.Gender != "f" {
-		return ErrorInvalidGender
+
+	_, err := ValidateGender(u.Gender)
+	if err != nil {
+		return err
 	}
+
 	// TODO: validate email
 	// github.com/badoux/checkmail
 

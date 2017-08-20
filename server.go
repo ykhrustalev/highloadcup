@@ -28,6 +28,7 @@ func Server() {
 	router := NewRouter(
 		crud.NewHandler(repo),
 		handlers.NewListVisitsHandler(repo),
+		handlers.NewLocationsAvgHandler(repo),
 	)
 
 	http.HandleFunc("/", router.Handle)

@@ -8,6 +8,7 @@ import (
 func (r *Repo) SaveVisit(item *models.Visit) error {
 	r.visits[item.Id] = item
 	r.storeVisitByUser(item)
+	r.storeVisitByLocation(item)
 	return nil
 }
 
@@ -20,6 +21,17 @@ func (r *Repo) storeVisitByUser(item *models.Visit) {
 	// TODO: use set?
 	arr = append(arr, item)
 	r.visitsByUser[item.User] = arr
+}
+
+func (r *Repo) storeVisitByLocation(item *models.Visit) {
+	arr, ok := r.visitsByLocation[item.Location]
+	if !ok {
+		arr = make([]*models.Visit, 0)
+	}
+
+	// TODO: use set?
+	arr = append(arr, item)
+	r.visitsByLocation[item.Location] = arr
 }
 
 func (r *Repo) GetVisit(id int) (*models.Visit, bool) {
@@ -91,6 +103,67 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 	}
 
 	return result
+}
+
+func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFilter) float32 {
+	visits, ok := r.visitsByLocation[locationId]
+	if !ok {
+		return 0.0
+	}
+
+	if filter.FromDate != nil {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
+			return filter.FromDate.Before(item.VisitedAt)
+		})
+	}
+
+	if filter.ToDate != nil {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
+			return filter.ToDate.After(item.VisitedAt)
+		})
+	}
+
+	if filter.FromAge != nil {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
+			user, found := r.GetUser(item.User)
+			if !found {
+				return false
+			}
+
+			return filter.FromAge.Before(user.BirthDate)
+		})
+	}
+
+	if filter.ToDate != nil {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
+			user, found := r.GetUser(item.User)
+			if !found {
+				return false
+			}
+
+			return filter.FromAge.After(user.BirthDate)
+		})
+	}
+
+	if filter.Gender != nil {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
+			user, found := r.GetUser(item.User)
+			if !found {
+				return false
+			}
+
+			return *filter.Gender == user.Gender
+		})
+	}
+
+	var res float32
+	for _, visit := range visits {
+		res += float32(visit.Mark)
+	}
+
+	res = res / float32(len(visits))
+
+	return res
 }
 
 func filterVisits(items []*models.Visit, predicate func(*models.Visit) bool) []*models.Visit {
