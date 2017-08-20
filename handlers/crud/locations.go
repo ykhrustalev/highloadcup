@@ -55,12 +55,12 @@ func (h *Locations) Update(theTarget interface{}, theSource interface{}) error {
 func (h *Locations) Add(theTarget interface{}) error {
 	target := theTarget.(*models.Location)
 
-	_, err := h.repo.GetLocation(target.Id)
-	if err == nil {
+	obj := h.repo.GetLocation(target.Id)
+	if obj != nil {
 		return ErrorObjectExists
 	}
 
-	err = target.Validate()
+	err := target.Validate()
 	if err != nil {
 		return err
 	}

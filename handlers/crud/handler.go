@@ -86,7 +86,7 @@ func (r *Handler) Get(adapter Adapter, w http.ResponseWriter, req *http.Request)
 	}
 
 	item := adapter.Get(id)
-	if item != nil {
+	if item == nil {
 		http.Error(w, ErrorNotFound.Error(), http.StatusNotFound)
 		return
 	}
@@ -101,7 +101,7 @@ func (r *Handler) Update(adapter Adapter, w http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	target, err := adapter.Get(id)
+	target := adapter.Get(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

@@ -28,7 +28,7 @@ func (h *Users) New() interface{} {
 }
 
 func (h *Users) NewPartial() interface{} {
-	return &models.UserPartialRaw{}
+	return &models.UserPartial{}
 }
 
 func (h *Users) PathToId(req *http.Request) (int, error) {
@@ -41,7 +41,7 @@ func (h *Users) Get(id int) interface{} {
 
 func (h *Users) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.User)
-	source := theSource.(*models.UserPartialRaw)
+	source := theSource.(*models.UserPartial)
 
 	target.UpdatePartial(source)
 	err := target.Validate()
@@ -55,12 +55,12 @@ func (h *Users) Update(theTarget interface{}, theSource interface{}) error {
 func (h *Users) Add(theTarget interface{}) error {
 	target := theTarget.(*models.User)
 
-	_, err := h.repo.GetUser(target.Id)
-	if err == nil {
+	obj := h.repo.GetUser(target.Id)
+	if obj != nil {
 		return ErrorObjectExists
 	}
 
-	err = target.Validate()
+	err := target.Validate()
 	if err != nil {
 		return err
 	}

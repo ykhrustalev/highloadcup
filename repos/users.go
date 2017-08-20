@@ -1,7 +1,8 @@
 package repos
 
-import "github.com/ykhrustalev/highloadcup/models"
-
+import (
+	"github.com/ykhrustalev/highloadcup/models"
+)
 
 func (r *Repo) SaveUser(item *models.User) error {
 	r.users[item.Id] = item
