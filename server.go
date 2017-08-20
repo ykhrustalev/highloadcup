@@ -37,6 +37,6 @@ func Server() {
 		port = "8080"
 	}
 
-	fmt.Printf("listen on %s", port)
+	fmt.Printf("listen on %s\n", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }
