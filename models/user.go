@@ -27,7 +27,40 @@ func (u *User) SetBirthDate(value int64) {
 	u.BirthDate = time.Unix(value, 0)
 }
 
+var lowestBirthDate = parseDate("1930-01-01")
+var highestBirthDate = parseDate("1999-01-01")
+
+func parseDate(value string) time.Time {
+	res, err := time.Parse("2006-01-02", value)
+	if err != nil {
+		panic(err)
+	}
+	return res
+}
+
 func (u *User) Validate() error {
+	if len(u.FirstName) > 50 {
+		return ErrorStringTooLong
+	}
+	if len(u.LastName) > 50 {
+		return ErrorStringTooLong
+	}
+	if len(u.Email) > 100 {
+		return ErrorStringTooLong
+	}
+	if u.Gender != "m" && u.Gender != "f" {
+		return ErrorInvalidGender
+	}
+	// TODO: validate email
+	// github.com/badoux/checkmail
+	if u.BirthDate.Before(lowestBirthDate) {
+		return ErrorBirthDayToEarly
+	}
+
+	if u.BirthDate.After(highestBirthDate) {
+		return ErrorBirthDayToLate
+	}
+
 	return nil
 }
 
@@ -75,20 +108,10 @@ func (u *User) UnmarshalJSON(b []byte) error {
 	u.Email = obj.Email
 	u.FirstName = obj.FirstName
 	u.LastName = obj.LastName
-	u.Gender, err = validateGender(obj.Gender)
-	if err != nil {
-		return err
-	}
+	u.Gender = obj.Gender
 	u.SetBirthDate(obj.BirthDate)
 
 	return nil
-}
-
-func validateGender(val string) (string, error) {
-	if val == "m" || val == "f" {
-		return val, nil
-	}
-	return "", ErrorInvalidGender
 }
 
 // Partial
@@ -136,16 +159,10 @@ func (u *UserPartial) UnmarshalJSON(b []byte) error {
 
 	value, ok = obj["gender"]
 	if ok {
-		gender, err := GetNonNullString(value)
+		u.Gender, err = GetNonNullStringP(value)
 		if err != nil {
 			return err
 		}
-
-		_, err = validateGender(gender)
-		if err != nil {
-			return err
-		}
-		u.Gender = &gender
 	}
 
 	value, ok = obj["birth_date"]

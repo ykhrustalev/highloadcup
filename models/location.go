@@ -11,6 +11,12 @@ type Location struct {
 }
 
 func (u *Location) Validate() error {
+	if len(u.Country) > 50 {
+		return ErrorStringTooLong
+	}
+	if len(u.City) > 50 {
+		return ErrorStringTooLong
+	}
 	return nil
 }
 
