@@ -56,10 +56,10 @@ func (u *User) Validate() error {
 	}
 	// TODO: validate email
 	// github.com/badoux/checkmail
+
 	if u.BirthDate.Before(lowestBirthDate) {
 		return ErrorBirthDayToEarly
 	}
-
 	if u.BirthDate.After(highestBirthDate) {
 		return ErrorBirthDayToLate
 	}
