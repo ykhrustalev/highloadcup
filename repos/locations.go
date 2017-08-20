@@ -19,13 +19,12 @@ func (r *Repo) SaveLocation(item *models.Location) error {
 	return nil
 }
 
-func (r *Repo) GetLocation(id int) (*models.Location, error) {
+func (r *Repo) GetLocation(id int) *models.Location {
 	item, ok := r.locations[id]
 	if ok {
-		return item, nil
+		return item
 	}
-	// TODO: return nil
-	return nil, ErrorNotFound
+	return nil
 }
 
 func (r *Repo) CountLocations() int {

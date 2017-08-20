@@ -8,12 +8,12 @@ func (r *Repo) SaveUser(item *models.User) error {
 	return nil
 }
 
-func (r *Repo) GetUser(id int) (*models.User, error) {
+func (r *Repo) GetUser(id int) *models.User {
 	item, ok := r.users[id]
 	if ok {
-		return item, nil
+		return item
 	}
-	return nil, ErrorNotFound
+	return nil
 }
 
 func (r *Repo) CountUsers() int {

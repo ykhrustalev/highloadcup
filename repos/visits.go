@@ -22,12 +22,12 @@ func (r *Repo) storeVisitByUser(item *models.Visit) {
 	r.visitsByUser[item.User] = arr
 }
 
-func (r *Repo) GetVisit(id int) (*models.Visit, error) {
+func (r *Repo) GetVisit(id int) *models.Visit {
 	item, ok := r.visits[id]
 	if ok {
-		return item, nil
+		return item
 	}
-	return nil, ErrorNotFound
+	return nil
 }
 
 func (r *Repo) CountVisits() int {
@@ -57,7 +57,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 
 	if filter.ToDistance != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
-			location, _ := r.GetLocation(item.Location)
+			location := r.GetLocation(item.Location)
 			if location == nil {
 				return false
 			}

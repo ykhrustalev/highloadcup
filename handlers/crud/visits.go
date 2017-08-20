@@ -35,7 +35,7 @@ func (h *Visits) PathToId(req *http.Request) (int, error) {
 	return helpers.PathToIdPrefix(req, h.prefix)
 }
 
-func (h *Visits) Get(id int) (interface{}, error) {
+func (h *Visits) Get(id int) interface{} {
 	return h.repo.GetVisit(id)
 }
 
