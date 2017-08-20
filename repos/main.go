@@ -1,8 +1,8 @@
 package repos
 
 import (
-	"github.com/ykhrustalev/highloadcup/models"
 	"github.com/ykhrustalev/highloadcup/collections"
+	"github.com/ykhrustalev/highloadcup/models"
 )
 
 type Repo struct {

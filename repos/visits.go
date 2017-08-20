@@ -34,28 +34,29 @@ func (r *Repo) CountVisits() int {
 	return len(r.visits)
 }
 
-func (r *Repo) FilterVisits(userId int, filter *models.VisitsFilter) []*models.Visit {
-	result := make([]*models.Visit, 0)
+var emptyVisitsForUser = make([]*models.VisitForUser, 0)
 
-	arr, ok := r.visitsByUser[userId]
+func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*models.VisitForUser {
+	// TODO: mutex
+	visits, ok := r.visitsByUser[userId]
 	if !ok {
-		return result
+		return emptyVisitsForUser
 	}
 
 	if filter.FromDate != nil {
-		arr = filterVisits(arr, func(item *models.Visit) bool {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
 			return filter.FromDate.Before(item.VisitedAt)
 		})
 	}
 
 	if filter.ToDate != nil {
-		arr = filterVisits(arr, func(item *models.Visit) bool {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
 			return filter.ToDate.After(item.VisitedAt)
 		})
 	}
 
 	if filter.ToDistance != nil {
-		arr = filterVisits(arr, func(item *models.Visit) bool {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
 			location, _ := r.GetLocation(item.Location)
 			if location == nil {
 				return false
@@ -68,14 +69,31 @@ func (r *Repo) FilterVisits(userId int, filter *models.VisitsFilter) []*models.V
 	if filter.Country != nil {
 		locationsInCountry := r.GetLocationIdsForCountry(*filter.Country)
 
-		arr = filterVisits(arr, func(item *models.Visit) bool {
+		visits = filterVisits(visits, func(item *models.Visit) bool {
 			return locationsInCountry.Contains(item.Location)
 		})
 	}
 
-	sort.Sort(models.VisitsByVisitDate(arr))
+	sort.Sort(models.VisitsByVisitDate(visits))
 
-	return arr
+	result := make([]*models.VisitForUser, 0)
+	for _, visit := range visits {
+		location, ok := r.locations[visit.Location]
+		if !ok {
+			// TODO: should filter them?
+			continue
+		}
+
+		obj := &models.VisitForUser{
+			Place:     location.Place,
+			VisitedAt: visit.VisitedAt,
+			Mark:      visit.Mark,
+		}
+
+		result = append(result, obj)
+	}
+
+	return result
 }
 
 func filterVisits(items []*models.Visit, predicate func(*models.Visit) bool) []*models.Visit {

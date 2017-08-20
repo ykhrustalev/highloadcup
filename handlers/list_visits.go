@@ -66,14 +66,8 @@ func (h *ListVisitsHandler) doHandle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	visits := h.repo.FilterVisits(user.Id, filters)
-
-	visitsForUser := make([]*models.VisitForUser, 0)
-	for _, visit := range visits {
-		visitsForUser = append(visitsForUser, visit.ToVisitForUser())
-	}
 	response := &VisitsResponse{
-		Visits: visitsForUser,
+		Visits: h.repo.FilterVisitsForUser(user.Id, filters),
 	}
 
 	helpers.WriteResponse(w, helpers.ToJson(response))
