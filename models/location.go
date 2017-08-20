@@ -1,5 +1,7 @@
 package models
 
+import "encoding/json"
+
 type Location struct {
 	Id       int    `json:"id"`       // уникальный внешний id достопримечательности. Устанавливается тестирующей системой. 32-разрядное целое число.
 	Place    string `json:"place"`    // описание достопримечательности. Текстовое поле неограниченной длины.
@@ -8,18 +10,11 @@ type Location struct {
 	Distance int    `json:"distance"` // расстояние от города по прямой в километрах. 32-разрядное целое число.
 }
 
-type LocationPartialRaw struct {
-	Place    *string `json:"place"`
-	Country  *string `json:"country"`
-	City     *string `json:"city"`
-	Distance *int    `json:"distance"`
-}
-
 func (u *Location) Validate() error {
 	return nil
 }
 
-func (u *Location) UpdatePartial(source *LocationPartialRaw) error {
+func (u *Location) UpdatePartial(source *LocationPartial) error {
 
 	if source.Place != nil {
 		u.Place = *source.Place
@@ -32,6 +27,59 @@ func (u *Location) UpdatePartial(source *LocationPartialRaw) error {
 	}
 	if source.Distance != nil {
 		u.Distance = *source.Distance
+	}
+
+	return nil
+}
+
+// Partial
+
+type LocationPartial struct {
+	Place    *string
+	Country  *string
+	City     *string
+	Distance *int
+}
+
+func (u *LocationPartial) UnmarshalJSON(b []byte) error {
+
+	obj := map[string]interface{}{}
+
+	err := json.Unmarshal(b, &obj)
+	if err != nil {
+		return err
+	}
+
+	value, ok := obj["place"]
+	if ok {
+		u.Place, err = GetNonNullStringP(value)
+		if err != nil {
+			return err
+		}
+	}
+
+	value, ok = obj["country"]
+	if ok {
+		u.Country, err = GetNonNullStringP(value)
+		if err != nil {
+			return err
+		}
+	}
+
+	value, ok = obj["city"]
+	if ok {
+		u.City, err = GetNonNullStringP(value)
+		if err != nil {
+			return err
+		}
+	}
+
+	value, ok = obj["distance"]
+	if ok {
+		u.Distance, err = GetNonNullIntP(value)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

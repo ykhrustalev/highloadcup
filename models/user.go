@@ -84,14 +84,14 @@ func (u *User) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Partial
-
 func validateGender(val string) (string, error) {
 	if val == "m" || val == "f" {
 		return val, nil
 	}
 	return "", ErrorInvalidGender
 }
+
+// Partial
 
 type UserPartial struct {
 	Email     *string

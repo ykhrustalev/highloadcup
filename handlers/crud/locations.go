@@ -28,7 +28,7 @@ func (h *Locations) New() interface{} {
 }
 
 func (h *Locations) NewPartial() interface{} {
-	return &models.LocationPartialRaw{}
+	return &models.LocationPartial{}
 }
 
 func (h *Locations) PathToId(req *http.Request) (int, error) {
@@ -41,7 +41,7 @@ func (h *Locations) Get(id int) interface{} {
 
 func (h *Locations) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.Location)
-	source := theSource.(*models.LocationPartialRaw)
+	source := theSource.(*models.LocationPartial)
 
 	target.UpdatePartial(source)
 	err := target.Validate()
