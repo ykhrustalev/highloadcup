@@ -149,14 +149,14 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		})
 	}
 
-	if filter.ToDate != nil {
+	if filter.ToAge!= nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			user, found := r.GetUser(item.User)
 			if !found {
 				return false
 			}
 
-			return filter.FromAge.After(user.BirthDate)
+			return filter.ToAge.After(user.BirthDate)
 		})
 	}
 
@@ -176,9 +176,13 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		res += float32(visit.Mark)
 	}
 
-	res = res / float32(len(visits))
+	visits_len := len(visits)
 
-	return res
+	if visits_len == 0 {
+		return 0.0
+	}
+
+	return res / float32(visits_len)
 }
 
 func filterVisits(items []*models.Visit, predicate func(*models.Visit) bool) []*models.Visit {
