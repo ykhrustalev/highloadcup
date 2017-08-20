@@ -25,7 +25,7 @@ func (h *LocationsHandler) NewPartial() interface{} {
 }
 
 func (h *LocationsHandler) PathToId(req *http.Request) (int, error) {
-	return pathToId(req, h.Path)
+	return pathToIdPrefix(req, h.Path)
 }
 
 func (h *LocationsHandler) Get(id int) (interface{}, error) {

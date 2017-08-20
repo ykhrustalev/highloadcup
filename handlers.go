@@ -1,9 +1,9 @@
 package highloadcup
 
 import (
-	"strings"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Handler interface {
@@ -17,8 +17,17 @@ type Handler interface {
 
 /// helpers
 
-func pathToId(req *http.Request, prefix string) (int, error) {
+func pathToIdPrefix(req *http.Request, prefix string) (int, error) {
+	return pathToId(req, prefix, "")
+}
+
+func pathToId(req *http.Request, prefix string, suffix string) (int, error) {
 	idStr := strings.Replace(req.URL.Path, prefix, "", 1)
+	idStr = strings.TrimRight(idStr, "/")
+	if suffix != "" {
+		idStr = strings.Replace(idStr, suffix, "", 1)
+	}
+
 	return toInt(idStr)
 }
 

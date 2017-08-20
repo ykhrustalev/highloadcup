@@ -7,12 +7,14 @@ import (
 type UsersHandler struct {
 	repo UsersRepo
 	Path string
+	VisitsPath string
 }
 
 func NewUsersHandler(repo UsersRepo) *UsersHandler {
 	return &UsersHandler{
 		repo: repo,
 		Path: "/users/",
+		VisitsPath: "/visits",
 	}
 }
 
@@ -25,7 +27,11 @@ func (h *UsersHandler) NewPartial() interface{} {
 }
 
 func (h *UsersHandler) PathToId(req *http.Request) (int, error) {
-	return pathToId(req, h.Path)
+	return pathToIdPrefix(req, h.Path)
+}
+
+func (h *UsersHandler) PathToIdVisits(req *http.Request) (int, error) {
+	return pathToId(req, h.Path, h.VisitsPath)
 }
 
 func (h *UsersHandler) Get(id int) (interface{}, error) {
