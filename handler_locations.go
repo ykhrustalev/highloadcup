@@ -2,6 +2,7 @@ package highloadcup
 
 import (
 	"net/http"
+	"github.com/ykhrustalev/highloadcup/models"
 )
 
 type LocationsHandler struct {
@@ -17,11 +18,11 @@ func NewLocationsHandler(repo LocationsRepo) *LocationsHandler {
 }
 
 func (h *LocationsHandler) New() interface{} {
-	return &Location{}
+	return &models.Location{}
 }
 
 func (h *LocationsHandler) NewPartial() interface{} {
-	return &LocationPartialRaw{}
+	return &models.LocationPartialRaw{}
 }
 
 func (h *LocationsHandler) PathToId(req *http.Request) (int, error) {
@@ -33,8 +34,8 @@ func (h *LocationsHandler) Get(id int) (interface{}, error) {
 }
 
 func (h *LocationsHandler) Update(theTarget interface{}, theSource interface{}) error {
-	target := theTarget.(*Location)
-	source := theSource.(*LocationPartialRaw)
+	target := theTarget.(*models.Location)
+	source := theSource.(*models.LocationPartialRaw)
 
 	target.UpdatePartial(source)
 	err := target.Validate()
@@ -46,7 +47,7 @@ func (h *LocationsHandler) Update(theTarget interface{}, theSource interface{}) 
 }
 
 func (h *LocationsHandler) Add(theTarget interface{}) error {
-	target := theTarget.(*Location)
+	target := theTarget.(*models.Location)
 
 	_, err := h.repo.Get(target.Id)
 	if err == nil {

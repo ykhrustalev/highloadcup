@@ -1,4 +1,4 @@
-package highloadcup
+package models
 
 import (
 	"encoding/json"

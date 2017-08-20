@@ -1,27 +1,30 @@
 package highloadcup
 
-import "github.com/ykhrustalev/highloadcup/collections"
+import (
+	"github.com/ykhrustalev/highloadcup/collections"
+	"github.com/ykhrustalev/highloadcup/models"
+)
 
 type LocationsRepo interface {
-	Save(*Location) error
-	Get(int) (*Location, error)
+	Save(*models.Location) error
+	Get(int) (*models.Location, error)
 	Count() int
 	GetLocationIdsForCountry(string) *collections.IntSet
 }
 
 type LocationsRepoImpl struct {
-	locations          map[int]*Location
+	locations          map[int]*models.Location
 	locationsByCountry map[string]*collections.IntSet
 }
 
 func NewLocationsRepoImpl() *LocationsRepoImpl {
 	return &LocationsRepoImpl{
-		locations:          make(map[int]*Location),
+		locations:          make(map[int]*models.Location),
 		locationsByCountry: make(map[string]*collections.IntSet),
 	}
 }
 
-func (r *LocationsRepoImpl) Save(item *Location) error {
+func (r *LocationsRepoImpl) Save(item *models.Location) error {
 	r.locations[item.Id] = item
 
 	countrySet, ok := r.locationsByCountry[item.Country]
@@ -35,7 +38,7 @@ func (r *LocationsRepoImpl) Save(item *Location) error {
 	return nil
 }
 
-func (r *LocationsRepoImpl) Get(id int) (*Location, error) {
+func (r *LocationsRepoImpl) Get(id int) (*models.Location, error) {
 	item, ok := r.locations[id]
 	if ok {
 		return item, nil

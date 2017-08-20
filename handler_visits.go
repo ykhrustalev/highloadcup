@@ -2,6 +2,7 @@ package highloadcup
 
 import (
 	"net/http"
+	"github.com/ykhrustalev/highloadcup/models"
 )
 
 type VisitsHandler struct {
@@ -17,11 +18,11 @@ func NewVisitsHandler(repo VisitsRepo) *VisitsHandler {
 }
 
 func (h *VisitsHandler) New() interface{} {
-	return &Visit{}
+	return &models.Visit{}
 }
 
 func (h *VisitsHandler) NewPartial() interface{} {
-	return &VisitPartialRaw{}
+	return &models.VisitPartialRaw{}
 }
 
 func (h *VisitsHandler) PathToId(req *http.Request) (int, error) {
@@ -33,8 +34,8 @@ func (h *VisitsHandler) Get(id int) (interface{}, error) {
 }
 
 func (h *VisitsHandler) Update(theTarget interface{}, theSource interface{}) error {
-	target := theTarget.(*Visit)
-	source := theSource.(*VisitPartialRaw)
+	target := theTarget.(*models.Visit)
+	source := theSource.(*models.VisitPartialRaw)
 
 	target.UpdatePartial(source)
 	err := target.Validate()
@@ -46,7 +47,7 @@ func (h *VisitsHandler) Update(theTarget interface{}, theSource interface{}) err
 }
 
 func (h *VisitsHandler) Add(theTarget interface{}) error {
-	target := theTarget.(*Visit)
+	target := theTarget.(*models.Visit)
 
 	_, err := h.repo.Get(target.Id)
 	if err == nil {
@@ -63,6 +64,6 @@ func (h *VisitsHandler) Add(theTarget interface{}) error {
 	return nil
 }
 
-func (h *VisitsHandler) Filter(userId int, filters *VisitsFilter) []*Visit {
+func (h *VisitsHandler) Filter(userId int, filters *models.VisitsFilter) []*models.Visit {
 	return h.repo.Filter(userId, filters)
 }

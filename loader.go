@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"github.com/ykhrustalev/highloadcup/models"
 )
 
 type Loader struct {
@@ -44,15 +45,15 @@ func (l *Loader) Load(path string) error {
 }
 
 type UsersLoad struct {
-	Users []*User `json:"users"`
+	Users []*models.User `json:"users"`
 }
 
 type LocationsLoad struct {
-	Locations []*Location `json:"locations"`
+	Locations []*models.Location `json:"locations"`
 }
 
 type VisitsLoad struct {
-	Visits []*Visit `json:"visits"`
+	Visits []*models.Visit `json:"visits"`
 }
 
 func (l *Loader) loadFile(file *zip.File) error {

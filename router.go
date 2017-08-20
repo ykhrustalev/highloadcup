@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"github.com/ykhrustalev/highloadcup/models"
 )
 
 type Router struct {
@@ -71,7 +72,7 @@ func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
 }
 
 type VisitsResponse struct {
-	Visits []*VisitForUser `json:"visits"`
+	Visits []*models.VisitForUser `json:"visits"`
 }
 
 func (r *Router) ListVisits(w http.ResponseWriter, req *http.Request) {
@@ -88,17 +89,17 @@ func (r *Router) ListVisits(w http.ResponseWriter, req *http.Request) {
 	}
 
 	values := req.URL.Query()
-	filters, err := VisitsFilterFromValues(&values)
+	filters, err := models.VisitsFilterFromValues(&values)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	user := user_.(*User)
+	user := user_.(*models.User)
 
 	visits := r.visits.Filter(user.Id, filters)
 
-	visitsForUser := make([]*VisitForUser, 0)
+	visitsForUser := make([]*models.VisitForUser, 0)
 	for _, visit := range visits {
 		visitsForUser = append(visitsForUser, visit.ToVisitForUser())
 	}

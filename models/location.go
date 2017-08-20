@@ -1,4 +1,4 @@
-package highloadcup
+package models
 
 type Location struct {
 	Id       int    `json:"id"`       // уникальный внешний id достопримечательности. Устанавливается тестирующей системой. 32-разрядное целое число.

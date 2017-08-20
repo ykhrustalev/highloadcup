@@ -2,6 +2,7 @@ package highloadcup
 
 import (
 	"net/http"
+	"github.com/ykhrustalev/highloadcup/models"
 )
 
 type UsersHandler struct {
@@ -19,11 +20,11 @@ func NewUsersHandler(repo UsersRepo) *UsersHandler {
 }
 
 func (h *UsersHandler) New() interface{} {
-	return &User{}
+	return &models.User{}
 }
 
 func (h *UsersHandler) NewPartial() interface{} {
-	return &UserPartialRaw{}
+	return &models.UserPartialRaw{}
 }
 
 func (h *UsersHandler) PathToId(req *http.Request) (int, error) {
@@ -39,8 +40,8 @@ func (h *UsersHandler) Get(id int) (interface{}, error) {
 }
 
 func (h *UsersHandler) Update(theTarget interface{}, theSource interface{}) error {
-	target := theTarget.(*User)
-	source := theSource.(*UserPartialRaw)
+	target := theTarget.(*models.User)
+	source := theSource.(*models.UserPartialRaw)
 
 	target.UpdatePartial(source)
 	err := target.Validate()
@@ -52,7 +53,7 @@ func (h *UsersHandler) Update(theTarget interface{}, theSource interface{}) erro
 }
 
 func (h *UsersHandler) Add(theTarget interface{}) error {
-	target := theTarget.(*User)
+	target := theTarget.(*models.User)
 
 	_, err := h.repo.Get(target.Id)
 	if err == nil {

@@ -1,27 +1,29 @@
 package highloadcup
 
+import "github.com/ykhrustalev/highloadcup/models"
+
 type UsersRepo interface {
-	Save(*User) error
-	Get(int) (*User, error)
+	Save(*models.User) error
+	Get(int) (*models.User, error)
 	Count() int
 }
 
 type UsersRepoImpl struct {
-	items map[int]*User
+	items map[int]*models.User
 }
 
 func NewUsersRepoImpl() *UsersRepoImpl {
 	return &UsersRepoImpl{
-		items: make(map[int]*User),
+		items: make(map[int]*models.User),
 	}
 }
 
-func (r *UsersRepoImpl) Save(item *User) error {
+func (r *UsersRepoImpl) Save(item *models.User) error {
 	r.items[item.Id] = item
 	return nil
 }
 
-func (r *UsersRepoImpl) Get(id int) (*User, error) {
+func (r *UsersRepoImpl) Get(id int) (*models.User, error) {
 	item, ok := r.items[id]
 	if ok {
 		return item, nil
