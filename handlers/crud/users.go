@@ -55,10 +55,10 @@ func (h *Users) Update(theTarget interface{}, theSource interface{}) error {
 func (h *Users) Add(theTarget interface{}) error {
 	target := theTarget.(*models.User)
 
-	_, found := h.repo.GetUser(target.Id)
-	if found {
-		return ErrorObjectExists
-	}
+	//_, found := h.repo.GetUser(target.Id)
+	//if found {
+	//	return ErrorObjectExists
+	//}
 
 	err := target.Validate()
 	if err != nil {
