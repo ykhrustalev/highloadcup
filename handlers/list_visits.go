@@ -53,8 +53,8 @@ func (h *ListVisitsHandler) doHandle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user, err := h.repo.GetUser(id)
-	if err != nil {
+	user := h.repo.GetUser(id)
+	if user == nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
