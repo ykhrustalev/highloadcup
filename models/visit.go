@@ -26,6 +26,18 @@ func (u *Visit) SetVisitedAt(value int64) {
 }
 
 func (u *Visit) Validate() error {
+	if u.Id == 0 {
+		return ErrorInvalidId
+	}
+	if u.Location == 0 {
+		return ErrorInvalidId
+	}
+	if u.User == 0 {
+		return ErrorInvalidId
+	}
+	if u.Mark < 0 || u.Mark > 5 {
+		return ErrorMark
+	}
 	return nil
 }
 

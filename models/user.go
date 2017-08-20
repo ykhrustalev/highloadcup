@@ -39,6 +39,9 @@ func parseDate(value string) time.Time {
 }
 
 func (u *User) Validate() error {
+	if u.Id == 0 {
+		return ErrorInvalidId
+	}
 	if len(u.FirstName) > 50 {
 		return ErrorStringTooLong
 	}
