@@ -149,7 +149,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		})
 	}
 
-	if filter.ToAge!= nil {
+	if filter.ToAge != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			user, found := r.GetUser(item.User)
 			if !found {
@@ -171,7 +171,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		})
 	}
 
-	var res float32
+	res := float32(0)
 	for _, visit := range visits {
 		res += float32(visit.Mark)
 	}

@@ -10,7 +10,7 @@ type LocationsAvgFilter struct {
 	FromDate *time.Time // учитывать оценки только с visited_at > fromDate
 	ToDate   *time.Time // учитывать оценки только с visited_at < toDate
 	FromAge  *time.Time // учитывать только путешественников, у которых возраст (считается от текущего timestamp) больше этого параметра
-	ToAge    *time.Time //как предыдущее, но наоборот
+	ToAge    *time.Time // как предыдущее, но наоборот
 	Gender   *string    // учитывать оценки только мужчин или женщин
 }
 
@@ -87,5 +87,5 @@ func (o *LocationsAvgFilter) SetFromAge(value int64) {
 
 func (o *LocationsAvgFilter) SetToAge(value int64) {
 	tm := nowSubYear(int(value))
-	o.FromAge = &tm
+	o.ToAge = &tm
 }
