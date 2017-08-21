@@ -27,16 +27,8 @@ func (u *User) SetBirthDate(value int64) {
 	u.BirthDate = time.Unix(value, 0)
 }
 
-var lowestBirthDate = parseDate("1930-01-01")
-var highestBirthDate = parseDate("1999-01-01")
-
-func parseDate(value string) time.Time {
-	res, err := time.Parse("2006-01-02", value)
-	if err != nil {
-		panic(err)
-	}
-	return res
-}
+var lowestBirthDate = time.Date(1930, 1, 1, 0, 0, 0, 0, time.UTC)
+var highestBirthDate = time.Date(1999, 1, 1, 0, 0, 0, 0, time.UTC)
 
 func (u *User) Validate() error {
 	if u.Id == 0 {
