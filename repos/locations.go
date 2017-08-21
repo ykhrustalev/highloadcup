@@ -9,7 +9,13 @@ func (r *Repo) UpdateLocation(target *models.Location, source *models.LocationPa
 	r.mx.Lock()
 	defer r.mx.Unlock()
 
-	oldCountry, newCountry := target.Country, *source.Country
+	var oldCountry, newCountry string
+
+	updateCountryStore := source.Country != nil
+	if updateCountryStore {
+		oldCountry, newCountry = target.Country, *source.Country
+		updateCountryStore = oldCountry != newCountry
+	}
 
 	target.UpdatePartial(source)
 	err := target.Validate()
@@ -17,7 +23,7 @@ func (r *Repo) UpdateLocation(target *models.Location, source *models.LocationPa
 		return err
 	}
 
-	if oldCountry != newCountry {
+	if updateCountryStore  {
 		removeKeyIn2(r.locationsByCountry, oldCountry, target.Id)
 		addKeyTo2(r.locationsByCountry, newCountry, target.Id)
 	}

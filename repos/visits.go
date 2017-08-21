@@ -10,8 +10,20 @@ func (r *Repo) UpdateVisit(target *models.Visit, source *models.VisitPartial) er
 	r.mx.Lock()
 	defer r.mx.Unlock()
 
-	oldLocation, newLocation := target.Location, *source.Location
-	oldUser, newUser := target.User, *source.User
+	var oldLocation, newLocation int
+	var oldUser, newUser int
+
+	updateLocationStore := source.Location != nil
+	if updateLocationStore {
+		oldLocation, newLocation := target.Location, *source.Location
+		updateLocationStore = oldLocation != newLocation
+	}
+
+	updateUserStore := source.User != nil
+	if updateUserStore {
+		oldUser, newUser := target.User, *source.User
+		updateUserStore = oldUser != newUser
+	}
 
 	target.UpdatePartial(source)
 	err := target.Validate()
@@ -19,12 +31,12 @@ func (r *Repo) UpdateVisit(target *models.Visit, source *models.VisitPartial) er
 		return err
 	}
 
-	if oldLocation != newLocation {
+	if updateLocationStore {
 		removeKeyIn(r.visitsByLocation, oldLocation, target.Id)
 		addKeyTo(r.visitsByLocation, newLocation, target.Id)
 	}
 
-	if oldUser != newUser {
+	if updateUserStore {
 		removeKeyIn(r.visitsByUser, oldUser, target.Id)
 		addKeyTo(r.visitsByUser, newUser, target.Id)
 	}
