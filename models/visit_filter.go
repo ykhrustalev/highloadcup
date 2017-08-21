@@ -1,9 +1,9 @@
 package models
 
 import (
-	"time"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 type VisitsFilter struct {

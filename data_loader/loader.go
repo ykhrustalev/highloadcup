@@ -4,10 +4,10 @@ import (
 	"archive/zip"
 	"encoding/json"
 	"fmt"
-	"io"
-	"strings"
 	"github.com/ykhrustalev/highloadcup/models"
 	"github.com/ykhrustalev/highloadcup/repos"
+	"io"
+	"strings"
 )
 
 type Loader struct {

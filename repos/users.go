@@ -4,7 +4,7 @@ import (
 	"github.com/ykhrustalev/highloadcup/models"
 )
 
-func (r *Repo) UpdateUser(target *models.User,source *models.UserPartial) error {
+func (r *Repo) UpdateUser(target *models.User, source *models.UserPartial) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 

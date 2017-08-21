@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/ykhrustalev/highloadcup/handlers/crud"
 	"github.com/ykhrustalev/highloadcup/handlers/helpers"
 	"github.com/ykhrustalev/highloadcup/models"
 	"github.com/ykhrustalev/highloadcup/repos"
 	"net/http"
 	"strings"
-	"fmt"
 )
 
 type LocationsAvgHandler struct {

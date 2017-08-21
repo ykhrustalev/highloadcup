@@ -11,7 +11,6 @@ func ToJson(obj interface{}) []byte {
 	return enc
 }
 
-
 func WriteResponse(w http.ResponseWriter, contents []byte) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(contents)))
