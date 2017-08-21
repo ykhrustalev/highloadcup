@@ -42,14 +42,7 @@ func (h *Visits) Get(id int) (interface{}, bool) {
 func (h *Visits) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.Visit)
 	source := theSource.(*models.VisitPartial)
-
-	target.UpdatePartial(source)
-	err := target.Validate()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return h.repo.UpdateVisit(target, source)
 }
 
 func (h *Visits) Add(theTarget interface{}) error {

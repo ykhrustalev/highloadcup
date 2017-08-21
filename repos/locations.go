@@ -5,19 +5,33 @@ import (
 	"github.com/ykhrustalev/highloadcup/models"
 )
 
+func (r *Repo) UpdateLocation(target *models.Location, source *models.LocationPartial) error {
+	r.mx.Lock()
+	defer r.mx.Unlock()
+
+	oldCountry, newCountry := target.Country, *source.Country
+
+	target.UpdatePartial(source)
+	err := target.Validate()
+	if err != nil {
+		return err
+	}
+
+	if oldCountry != newCountry {
+		removeKeyIn2(r.locationsByCountry, oldCountry, target.Id)
+		addKeyTo2(r.locationsByCountry, newCountry, target.Id)
+	}
+
+	return nil
+}
+
 func (r *Repo) SaveLocation(item *models.Location) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 
 	r.locations[item.Id] = item
 
-	countrySet, ok := r.locationsByCountry[item.Country]
-	if !ok {
-		countrySet = collections.NewIntSet()
-		r.locationsByCountry[item.Country] = countrySet
-	}
-
-	countrySet.Add(item.Id)
+	addKeyTo2(r.locationsByCountry, item.Country, item.Id)
 
 	return nil
 }

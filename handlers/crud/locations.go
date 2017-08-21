@@ -43,13 +43,7 @@ func (h *Locations) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.Location)
 	source := theSource.(*models.LocationPartial)
 
-	target.UpdatePartial(source)
-	err := target.Validate()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return h.repo.UpdateLocation(target, source)
 }
 
 func (h *Locations) Add(theTarget interface{}) error {

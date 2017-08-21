@@ -1,39 +1,46 @@
 package repos
 
 import (
-	"github.com/ykhrustalev/highloadcup/collections"
+	"fmt"
 	"github.com/ykhrustalev/highloadcup/models"
 	"sort"
 )
+
+func (r *Repo) UpdateVisit(target *models.Visit, source *models.VisitPartial) error {
+	r.mx.Lock()
+	defer r.mx.Unlock()
+
+	oldLocation, newLocation := target.Location, *source.Location
+	oldUser, newUser := target.User, *source.User
+
+	target.UpdatePartial(source)
+	err := target.Validate()
+	if err != nil {
+		return err
+	}
+
+	if oldLocation != newLocation {
+		removeKeyIn(r.visitsByLocation, oldLocation, target.Id)
+		addKeyTo(r.visitsByLocation, newLocation, target.Id)
+	}
+
+	if oldUser != newUser {
+		removeKeyIn(r.visitsByUser, oldUser, target.Id)
+		addKeyTo(r.visitsByUser, newUser, target.Id)
+	}
+
+	return nil
+}
 
 func (r *Repo) SaveVisit(item *models.Visit) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 
 	r.visits[item.Id] = item
-	r.storeVisitByUser(item)
-	r.storeVisitByLocation(item)
+	addKeyTo(r.visitsByUser, item.User, item.Id)
+	addKeyTo(r.visitsByLocation, item.Location, item.Id)
+
 	return nil
-}
-
-func (r *Repo) storeVisitByUser(item *models.Visit) {
-	arr, ok := r.visitsByUser[item.User]
-	if !ok {
-		arr = collections.NewIntSet()
-		r.visitsByUser[item.User] = arr
-	}
-
-	arr.Add(item.Id)
-}
-
-func (r *Repo) storeVisitByLocation(item *models.Visit) {
-	arr, ok := r.visitsByLocation[item.Location]
-	if !ok {
-		arr = collections.NewIntSet()
-		r.visitsByLocation[item.Location] = arr
-	}
-
-	arr.Add(item.Id)
 }
 
 func (r *Repo) GetVisit(id int) (*models.Visit, bool) {
@@ -84,6 +91,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			location, found := r.getLocationNoLock(item.Location)
 			if !found {
+				fmt.Println("noloc", item)
 				return false
 			}
 
@@ -106,6 +114,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 		location, ok := r.getLocationNoLock(visit.Location)
 		if !ok {
 			// TODO: should filter them?
+			fmt.Println("noloc2", visit)
 			continue
 		}
 
@@ -148,6 +157,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			user, found := r.getUserNoLock(item.User)
 			if !found {
+				fmt.Println("nouser", item)
 				return false
 			}
 
@@ -159,6 +169,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			user, found := r.getUserNoLock(item.User)
 			if !found {
+				fmt.Println("nouser2", item)
 				return false
 			}
 
@@ -170,6 +181,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			user, found := r.getUserNoLock(item.User)
 			if !found {
+				fmt.Println("nouser3", item)
 				return false
 			}
 
