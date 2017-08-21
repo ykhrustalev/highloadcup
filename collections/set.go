@@ -29,7 +29,7 @@ func (s *IntSet) Contains(i int) bool {
 }
 
 func (s *IntSet) Values() []int {
-	res := make([]int, len(s.set))
+	res := make([]int, 0)
 	for k := range s.set {
 		res = append(res, k)
 	}
