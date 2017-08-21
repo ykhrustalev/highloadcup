@@ -13,8 +13,6 @@ type Repo struct {
 	visitsByLocation   map[int]*collections.IntSet
 	locations          map[int]*models.Location
 	locationsByCountry map[string]*collections.IntSet
-
-	mx sync.RWMutex
 }
 
 func NewRepo() *Repo {
