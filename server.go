@@ -9,9 +9,12 @@ import (
 	"os"
 	"github.com/ykhrustalev/highloadcup/handlers"
 	"github.com/ykhrustalev/highloadcup/handlers/crud"
+	"time"
 )
 
 func Server() {
+	t0 := time.Now()
+
 	repo := repos.NewRepo()
 
 	path := os.Getenv("DATA_PATH")
@@ -37,6 +40,9 @@ func Server() {
 	if port == "" {
 		port = "8080"
 	}
+
+	t1 := time.Now()
+	fmt.Printf("booted in %d seconds\n", t1.Unix() - t0.Unix())
 
 	fmt.Printf("listen on %s\n", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
