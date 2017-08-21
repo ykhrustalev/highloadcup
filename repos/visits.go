@@ -1,6 +1,7 @@
 package repos
 
 import (
+	"github.com/ykhrustalev/highloadcup/collections"
 	"github.com/ykhrustalev/highloadcup/models"
 	"sort"
 )
@@ -18,29 +19,31 @@ func (r *Repo) SaveVisit(item *models.Visit) error {
 func (r *Repo) storeVisitByUser(item *models.Visit) {
 	arr, ok := r.visitsByUser[item.User]
 	if !ok {
-		arr = make([]*models.Visit, 0)
+		arr = collections.NewIntSet()
+		r.visitsByUser[item.User] = arr
 	}
 
-	// TODO: use set?
-	arr = append(arr, item)
-	r.visitsByUser[item.User] = arr
+	arr.Add(item.Id)
 }
 
 func (r *Repo) storeVisitByLocation(item *models.Visit) {
 	arr, ok := r.visitsByLocation[item.Location]
 	if !ok {
-		arr = make([]*models.Visit, 0)
+		arr = collections.NewIntSet()
+		r.visitsByLocation[item.Location] = arr
 	}
 
-	// TODO: use set?
-	arr = append(arr, item)
-	r.visitsByLocation[item.Location] = arr
+	arr.Add(item.Id)
 }
 
 func (r *Repo) GetVisit(id int) (*models.Visit, bool) {
 	r.mx.RLock()
 	defer r.mx.RUnlock()
 
+	return r.getVisitNoLock(id)
+}
+
+func (r *Repo) getVisitNoLock(id int) (*models.Visit, bool) {
 	item, ok := r.visits[id]
 	return item, ok
 }
@@ -58,12 +61,12 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 	r.mx.RLock()
 	defer r.mx.RUnlock()
 
-	visits, ok := r.visitsByUser[userId]
+	visitsSet, ok := r.visitsByUser[userId]
 	if !ok {
 		return emptyVisitsForUser
 	}
 
-	visits = copyVisitsArr(visits)
+	visits := r.visitsFromIds(visitsSet.Values())
 
 	if filter.FromDate != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
@@ -122,12 +125,12 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 	r.mx.RLock()
 	defer r.mx.RUnlock()
 
-	visits, ok := r.visitsByLocation[locationId]
+	visitsSet, ok := r.visitsByLocation[locationId]
 	if !ok {
 		return 0.0
 	}
 
-	visits = copyVisitsArr(visits)
+	visits := r.visitsFromIds(visitsSet.Values())
 
 	if filter.FromDate != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
@@ -188,11 +191,16 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 	return res / float32(visits_len)
 }
 
-func copyVisitsArr(items []*models.Visit) []*models.Visit {
+func (r *Repo) visitsFromIds(ids []int) []*models.Visit {
 	res := make([]*models.Visit, 0)
-	for _, item := range items {
-		res = append(res, item)
+
+	for _, id := range ids {
+		visit, ok := r.getVisitNoLock(id)
+		if ok {
+			res = append(res, visit)
+		}
 	}
+
 	return res
 }
 
