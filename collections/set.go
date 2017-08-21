@@ -30,3 +30,13 @@ func (s *IntSet) Values() []int {
 	}
 	return res
 }
+
+func (s *IntSet) Copy() *IntSet {
+	c := NewIntSet()
+
+	for k := range s.set {
+		c.Add(k)
+	}
+
+	return c
+}
