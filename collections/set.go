@@ -18,6 +18,10 @@ func (s *IntSet) Add(i int) bool {
 	return !found
 }
 
+func (s *IntSet) Remove(i int) {
+	delete(s.set, i)
+}
+
 func (s *IntSet) Contains(i int) bool {
 	_, found := s.set[i]
 	return found
