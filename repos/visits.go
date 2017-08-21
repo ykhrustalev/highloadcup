@@ -10,20 +10,8 @@ func (r *Repo) UpdateVisit(target *models.Visit, source *models.VisitPartial) er
 	r.mx.Lock()
 	defer r.mx.Unlock()
 
-	var oldLocation, newLocation int
-	var oldUser, newUser int
-
-	updateLocationStore := source.Location != nil
-	if updateLocationStore {
-		oldLocation, newLocation := target.Location, *source.Location
-		updateLocationStore = oldLocation != newLocation
-	}
-
-	updateUserStore := source.User != nil
-	if updateUserStore {
-		oldUser, newUser := target.User, *source.User
-		updateUserStore = oldUser != newUser
-	}
+	locationFinalise := swipeKeyIfRequired(r.visitsByLocation, target.Id, target.Location, source.Location)
+	userFinalise := swipeKeyIfRequired(r.visitsByUser, target.Id, target.User, source.User)
 
 	err := target.UpdatePartial(source)
 	if err != nil {
@@ -34,15 +22,8 @@ func (r *Repo) UpdateVisit(target *models.Visit, source *models.VisitPartial) er
 		return err
 	}
 
-	if updateLocationStore {
-		removeKeyIn(r.visitsByLocation, oldLocation, target.Id)
-		addKeyTo(r.visitsByLocation, newLocation, target.Id)
-	}
-
-	if updateUserStore {
-		removeKeyIn(r.visitsByUser, oldUser, target.Id)
-		addKeyTo(r.visitsByUser, newUser, target.Id)
-	}
+	locationFinalise()
+	userFinalise()
 
 	return nil
 }
