@@ -58,7 +58,6 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 	r.mx.RLock()
 	defer r.mx.RUnlock()
 
-	// TODO: mutex
 	visits, ok := r.visitsByUser[userId]
 	if !ok {
 		return emptyVisitsForUser
@@ -145,7 +144,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 				return false
 			}
 
-			return filter.FromAge.Before(user.BirthDate)
+			return filter.FromAge.After(user.BirthDate)
 		})
 	}
 
@@ -156,7 +155,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 				return false
 			}
 
-			return filter.ToAge.After(user.BirthDate)
+			return filter.ToAge.Before(user.BirthDate)
 		})
 	}
 
