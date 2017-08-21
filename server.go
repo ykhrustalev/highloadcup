@@ -3,12 +3,12 @@ package highloadcup
 import (
 	"fmt"
 	"github.com/ykhrustalev/highloadcup/data_loader"
+	"github.com/ykhrustalev/highloadcup/handlers"
+	"github.com/ykhrustalev/highloadcup/handlers/crud"
 	"github.com/ykhrustalev/highloadcup/repos"
 	"log"
 	"net/http"
 	"os"
-	"github.com/ykhrustalev/highloadcup/handlers"
-	"github.com/ykhrustalev/highloadcup/handlers/crud"
 	"time"
 )
 
@@ -42,7 +42,7 @@ func Server() {
 	}
 
 	t1 := time.Now()
-	fmt.Printf("booted in %d seconds\n", t1.Unix() - t0.Unix())
+	fmt.Printf("booted in %d seconds\n", t1.Unix()-t0.Unix())
 
 	fmt.Printf("listen on %s\n", port)
 	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
