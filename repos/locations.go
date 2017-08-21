@@ -46,5 +46,5 @@ func (r *Repo) GetLocationIdsForCountry(country string) *collections.IntSet {
 		return &collections.EmptyIntSet
 	}
 
-	return values
+	return values.Copy()
 }
