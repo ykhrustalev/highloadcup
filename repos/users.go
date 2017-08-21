@@ -16,6 +16,10 @@ func (r *Repo) GetUser(id int) (*models.User, bool) {
 	r.mx.RLock()
 	defer r.mx.RUnlock()
 
+	return r.getUserNoLock(id)
+}
+
+func (r *Repo) getUserNoLock(id int) (*models.User, bool) {
 	item, ok := r.users[id]
 	return item, ok
 }

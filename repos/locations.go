@@ -26,6 +26,10 @@ func (r *Repo) GetLocation(id int) (*models.Location, bool) {
 	r.mx.RLock()
 	defer r.mx.RUnlock()
 
+	return r.getLocationNoLock(id)
+}
+
+func (r *Repo) getLocationNoLock(id int) (*models.Location, bool) {
 	item, ok := r.locations[id]
 	return item, ok
 }
@@ -37,9 +41,9 @@ func (r *Repo) CountLocations() int {
 	return len(r.locations)
 }
 
-func (r *Repo) GetLocationIdsForCountry(country string) *collections.IntSet {
-	r.mx.RLock()
-	defer r.mx.RUnlock()
+func (r *Repo) getLocationIdsForCountry(country string) *collections.IntSet {
+	//r.mx.RLock()
+	//defer r.mx.RUnlock()
 
 	values, ok := r.locationsByCountry[country]
 	if !ok {

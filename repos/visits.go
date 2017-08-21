@@ -63,6 +63,8 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 		return emptyVisitsForUser
 	}
 
+	visits = copyVisitsArr(visits)
+
 	if filter.FromDate != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			return filter.FromDate.Before(item.VisitedAt)
@@ -77,7 +79,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 
 	if filter.ToDistance != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
-			location, found := r.GetLocation(item.Location)
+			location, found := r.getLocationNoLock(item.Location)
 			if !found {
 				return false
 			}
@@ -87,7 +89,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 	}
 
 	if filter.Country != nil {
-		locationsInCountry := r.GetLocationIdsForCountry(*filter.Country)
+		locationsInCountry := r.getLocationIdsForCountry(*filter.Country)
 
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			return locationsInCountry.Contains(item.Location)
@@ -98,7 +100,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 
 	result := make([]*models.VisitForUser, 0)
 	for _, visit := range visits {
-		location, ok := r.locations[visit.Location]
+		location, ok := r.getLocationNoLock(visit.Location)
 		if !ok {
 			// TODO: should filter them?
 			continue
@@ -125,6 +127,8 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 		return 0.0
 	}
 
+	visits = copyVisitsArr(visits)
+
 	if filter.FromDate != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
 			return filter.FromDate.Before(item.VisitedAt)
@@ -139,7 +143,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 
 	if filter.FromAge != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
-			user, found := r.GetUser(item.User)
+			user, found := r.getUserNoLock(item.User)
 			if !found {
 				return false
 			}
@@ -150,7 +154,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 
 	if filter.ToAge != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
-			user, found := r.GetUser(item.User)
+			user, found := r.getUserNoLock(item.User)
 			if !found {
 				return false
 			}
@@ -161,7 +165,7 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 
 	if filter.Gender != nil {
 		visits = filterVisits(visits, func(item *models.Visit) bool {
-			user, found := r.GetUser(item.User)
+			user, found := r.getUserNoLock(item.User)
 			if !found {
 				return false
 			}
@@ -182,6 +186,14 @@ func (r *Repo) AverageLocationMark(locationId int, filter *models.LocationsAvgFi
 	}
 
 	return res / float32(visits_len)
+}
+
+func copyVisitsArr(items []*models.Visit) []*models.Visit {
+	res := make([]*models.Visit, 0)
+	for _, item := range items {
+		res = append(res, item)
+	}
+	return res
 }
 
 func filterVisits(items []*models.Visit, predicate func(*models.Visit) bool) []*models.Visit {
