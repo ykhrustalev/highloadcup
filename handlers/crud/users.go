@@ -42,14 +42,7 @@ func (h *Users) Get(id int) (interface{}, bool) {
 func (h *Users) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.User)
 	source := theSource.(*models.UserPartial)
-
-	target.UpdatePartial(source)
-	err := target.Validate()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return h.repo.UpdateUser(target, source)
 }
 
 func (h *Users) Add(theTarget interface{}) error {

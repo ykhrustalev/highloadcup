@@ -25,8 +25,11 @@ func (r *Repo) UpdateVisit(target *models.Visit, source *models.VisitPartial) er
 		updateUserStore = oldUser != newUser
 	}
 
-	target.UpdatePartial(source)
-	err := target.Validate()
+	err := target.UpdatePartial(source)
+	if err != nil {
+		return err
+	}
+	err = target.Validate()
 	if err != nil {
 		return err
 	}
@@ -222,6 +225,8 @@ func (r *Repo) visitsFromIds(ids []int) []*models.Visit {
 		visit, ok := r.getVisitNoLock(id)
 		if ok {
 			res = append(res, visit)
+		} else {
+			fmt.Println("No visit for id", id)
 		}
 	}
 

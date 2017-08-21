@@ -13,6 +13,7 @@ func NewIntSet() *IntSet {
 }
 
 func (s *IntSet) Add(i int) bool {
+	// TODO: need return?
 	found := s.Contains(i)
 	s.set[i] = true
 	return !found

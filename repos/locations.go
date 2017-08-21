@@ -17,8 +17,11 @@ func (r *Repo) UpdateLocation(target *models.Location, source *models.LocationPa
 		updateCountryStore = oldCountry != newCountry
 	}
 
-	target.UpdatePartial(source)
-	err := target.Validate()
+	err := target.UpdatePartial(source)
+	if err != nil {
+		return err
+	}
+	err = target.Validate()
 	if err != nil {
 		return err
 	}
@@ -70,5 +73,5 @@ func (r *Repo) getLocationIdsForCountry(country string) *collections.IntSet {
 		return &collections.EmptyIntSet
 	}
 
-	return values.Copy()
+	return values
 }

@@ -4,6 +4,22 @@ import (
 	"github.com/ykhrustalev/highloadcup/models"
 )
 
+func (r *Repo) UpdateUser(target *models.User,source *models.UserPartial) error {
+	r.mx.Lock()
+	defer r.mx.Unlock()
+
+	err := target.UpdatePartial(source)
+	if err != nil {
+		return err
+	}
+	err = target.Validate()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Repo) SaveUser(item *models.User) error {
 	r.mx.Lock()
 	defer r.mx.Unlock()
