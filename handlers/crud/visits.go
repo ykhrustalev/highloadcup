@@ -1,10 +1,10 @@
 package crud
 
 import (
+	"github.com/ykhrustalev/highloadcup/handlers/helpers"
 	"github.com/ykhrustalev/highloadcup/models"
 	"github.com/ykhrustalev/highloadcup/repos"
 	"net/http"
-	"github.com/ykhrustalev/highloadcup/handlers/helpers"
 )
 
 type Visits struct {
