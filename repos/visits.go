@@ -58,15 +58,15 @@ func (r *Repo) CountVisits() int {
 	return len(r.visits)
 }
 
-var emptyVisitsForUser = make([]*models.VisitForUser, 0)
+var emptyVisitsForUserRaw = make([]*models.VisitForUserRaw, 0)
 
-func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*models.VisitForUser {
+func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*models.VisitForUserRaw {
 	r.mx.RLock()
 	defer r.mx.RUnlock()
 
 	visitsSet, ok := r.visitsByUser[userId]
 	if !ok {
-		return emptyVisitsForUser
+		return emptyVisitsForUserRaw
 	}
 
 	visits := r.visitsFromIds(visitsSet.Values())
@@ -105,7 +105,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 
 	sort.Sort(models.VisitsByVisitDate(visits))
 
-	result := make([]*models.VisitForUser, 0)
+	result := make([]*models.VisitForUserRaw, 0)
 	for _, visit := range visits {
 		location, ok := r.getLocationNoLock(visit.Location)
 		if !ok {
@@ -120,7 +120,7 @@ func (r *Repo) FilterVisitsForUser(userId int, filter *models.VisitsFilter) []*m
 			Mark:      visit.Mark,
 		}
 
-		result = append(result, obj)
+		result = append(result, obj.Raw())
 	}
 
 	return result

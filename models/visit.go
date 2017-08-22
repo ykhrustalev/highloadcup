@@ -1,24 +1,45 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 )
 
 type Visit struct {
-	Id        int       // уникальный внешний id посещения. Устанавливается тестирующей системой. 32-разрядное целое число.
-	Location  int       // id достопримечательности. 32-разрядное целое число.
-	User      int       // id путешественника. 32-разрядное целое число.
-	VisitedAt time.Time // дата посещения, timestamp с ограничениями: снизу 01.01.2000, а сверху 01.01.2015.
-	Mark      int       // оценка посещения от 0 до 5 включительно. Целое число.
+	Id        int       `json:"id"`         // уникальный внешний id посещения. Устанавливается тестирующей системой. 32-разрядное целое число.
+	Location  int       `json:"location"`   // id достопримечательности. 32-разрядное целое число.
+	User      int       `json:"user"`       // id путешественника. 32-разрядное целое число.
+	VisitedAt time.Time `json:"visited_at"` // дата посещения, timestamp с ограничениями: снизу 01.01.2000, а сверху 01.01.2015.
+	Mark      int       `json:"mark"`       // оценка посещения от 0 до 5 включительно. Целое число.
 }
 
-type visitRaw struct {
+type VisitRaw struct {
 	Id        int   `json:"id"`
 	Location  int   `json:"location"`
 	User      int   `json:"user"`
 	VisitedAt int64 `json:"visited_at"`
 	Mark      int   `json:"mark"`
+}
+
+func (obj *VisitRaw) Visit() *Visit {
+	v := &Visit{
+		Id:       obj.Id,
+		Location: obj.Location,
+		User:     obj.User,
+		Mark:     obj.Mark,
+	}
+	v.SetVisitedAt(obj.VisitedAt)
+
+	return v
+}
+
+func (u *Visit) VisitRaw() *VisitRaw {
+	return &VisitRaw{
+		u.Id,
+		u.Location,
+		u.User,
+		u.VisitedAt.Unix(),
+		u.Mark,
+	}
 }
 
 func (u *Visit) SetVisitedAt(value int64) {
@@ -59,83 +80,13 @@ func (u *Visit) UpdatePartial(source *VisitPartial) error {
 	return nil
 }
 
-func (u *Visit) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&visitRaw{
-		u.Id,
-		u.Location,
-		u.User,
-		u.VisitedAt.Unix(),
-		u.Mark,
-	})
-}
-
-func (u *Visit) UnmarshalJSON(b []byte) error {
-	var obj visitRaw
-	err := json.Unmarshal(b, &obj)
-	if err != nil {
-		return err
-	}
-
-	u.Id = obj.Id
-	u.Location = obj.Location
-	u.User = obj.User
-	u.SetVisitedAt(obj.VisitedAt)
-	u.Mark = obj.Mark
-
-	return nil
-}
-
 // Partial
 
 type VisitPartial struct {
-	Location  *int
-	User      *int
-	VisitedAt *int64
-	Mark      *int
-}
-
-func (u *VisitPartial) UnmarshalJSON(b []byte) error {
-
-	obj := map[string]interface{}{}
-
-	err := json.Unmarshal(b, &obj)
-	if err != nil {
-		return err
-	}
-
-	value, ok := obj["location"]
-	if ok {
-		u.Location, err = GetNonNullIntP(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	value, ok = obj["user"]
-	if ok {
-		u.User, err = GetNonNullIntP(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	value, ok = obj["visited_at"]
-	if ok {
-		u.VisitedAt, err = GetNonNullInt64P(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	value, ok = obj["mark"]
-	if ok {
-		u.Mark, err = GetNonNullIntP(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	Location  *int   `json:"location"`
+	User      *int   `json:"user"`
+	VisitedAt *int64 `json:"visited_at"`
+	Mark      *int   `json:"mark"`
 }
 
 // Sorting

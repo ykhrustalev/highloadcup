@@ -39,6 +39,14 @@ func (h *Visits) Get(id int) (interface{}, bool) {
 	return h.repo.GetVisit(id)
 }
 
+func (h *Visits) GetRaw(id int) (interface{}, bool) {
+	obj, found := h.repo.GetVisit(id)
+	if found {
+		return obj.VisitRaw(), found
+	}
+	return obj, found
+}
+
 func (h *Visits) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.Visit)
 	source := theSource.(*models.VisitPartial)

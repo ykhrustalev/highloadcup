@@ -39,6 +39,14 @@ func (h *Users) Get(id int) (interface{}, bool) {
 	return h.repo.GetUser(id)
 }
 
+func (h *Users) GetRaw(id int) (interface{}, bool) {
+	obj, found := h.repo.GetUser(id)
+	if found {
+		return obj.UserRaw(), found
+	}
+	return obj, found
+}
+
 func (h *Users) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.User)
 	source := theSource.(*models.UserPartial)

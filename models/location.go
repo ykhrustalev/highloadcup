@@ -1,7 +1,5 @@
 package models
 
-import "encoding/json"
-
 type Location struct {
 	Id       int    `json:"id"`       // уникальный внешний id достопримечательности. Устанавливается тестирующей системой. 32-разрядное целое число.
 	Place    string `json:"place"`    // описание достопримечательности. Текстовое поле неограниченной длины.
@@ -47,52 +45,8 @@ func (u *Location) UpdatePartial(source *LocationPartial) error {
 // Partial
 
 type LocationPartial struct {
-	Place    *string
-	Country  *string
-	City     *string
-	Distance *int
-}
-
-func (u *LocationPartial) UnmarshalJSON(b []byte) error {
-
-	obj := map[string]interface{}{}
-
-	err := json.Unmarshal(b, &obj)
-	if err != nil {
-		return err
-	}
-
-	value, ok := obj["place"]
-	if ok {
-		u.Place, err = GetNonNullStringP(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	value, ok = obj["country"]
-	if ok {
-		u.Country, err = GetNonNullStringP(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	value, ok = obj["city"]
-	if ok {
-		u.City, err = GetNonNullStringP(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	value, ok = obj["distance"]
-	if ok {
-		u.Distance, err = GetNonNullIntP(value)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	Place    *string `json:"place"`
+	Country  *string `json:"country"`
+	City     *string `json:"city"`
+	Distance *int    `json:"distance"`
 }

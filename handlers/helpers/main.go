@@ -1,14 +1,15 @@
 package helpers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
+	"github.com/pquerna/ffjson/ffjson"
 )
 
-func ToJson(obj interface{}) []byte {
-	enc, _ := json.Marshal(obj)
-	return enc
+func WriteResponseJson(w http.ResponseWriter, obj interface{}) {
+	buf, _ := ffjson.Marshal(obj)
+	WriteResponse(w, buf)
+	ffjson.Pool(buf)
 }
 
 func WriteResponse(w http.ResponseWriter, contents []byte) {

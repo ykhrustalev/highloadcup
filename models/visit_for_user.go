@@ -1,9 +1,12 @@
 package models
 
 import (
-	"encoding/json"
 	"time"
 )
+
+type VisitsResponse struct {
+	Visits []*VisitForUserRaw `json:"visits"`
+}
 
 type VisitForUser struct {
 	Place     string
@@ -11,16 +14,16 @@ type VisitForUser struct {
 	Mark      int
 }
 
-type visitForUserRaw struct {
+func (obj *VisitForUser) Raw() *VisitForUserRaw {
+	return &VisitForUserRaw{
+		obj.Place,
+		obj.VisitedAt.Unix(),
+		obj.Mark,
+	}
+}
+
+type VisitForUserRaw struct {
 	Place     string `json:"place"`
 	VisitedAt int64  `json:"visited_at"`
 	Mark      int    `json:"mark"`
-}
-
-func (u *VisitForUser) MarshalJSON() ([]byte, error) {
-	return json.Marshal(&visitForUserRaw{
-		u.Place,
-		u.VisitedAt.Unix(),
-		u.Mark,
-	})
 }

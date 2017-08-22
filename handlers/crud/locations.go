@@ -39,6 +39,10 @@ func (h *Locations) Get(id int) (interface{}, bool) {
 	return h.repo.GetLocation(id)
 }
 
+func (h *Locations) GetRaw(id int) (interface{}, bool) {
+	return h.Get(id)
+}
+
 func (h *Locations) Update(theTarget interface{}, theSource interface{}) error {
 	target := theTarget.(*models.Location)
 	source := theSource.(*models.LocationPartial)

@@ -27,10 +27,6 @@ func (h *ListVisitsHandler) PathToIdVisits(req *http.Request) (int, error) {
 	return helpers.PathToId(req, h.prefix, h.suffix)
 }
 
-type VisitsResponse struct {
-	Visits []*models.VisitForUser `json:"visits"`
-}
-
 func (h *ListVisitsHandler) Handle(w http.ResponseWriter, req *http.Request) bool {
 	if req.Method != "GET" {
 		return false
@@ -67,9 +63,9 @@ func (h *ListVisitsHandler) doHandle(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response := &VisitsResponse{
+	response := &models.VisitsResponse{
 		Visits: h.repo.FilterVisitsForUser(user.Id, filters),
 	}
 
-	helpers.WriteResponse(w, helpers.ToJson(response))
+	helpers.WriteResponseJson(w, response)
 }

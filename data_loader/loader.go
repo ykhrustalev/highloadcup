@@ -2,9 +2,8 @@ package data_loader
 
 import (
 	"archive/zip"
-	"encoding/json"
 	"fmt"
-	"github.com/ykhrustalev/highloadcup/models"
+	"github.com/pquerna/ffjson/ffjson"
 	"github.com/ykhrustalev/highloadcup/repos"
 	"io"
 	"strings"
@@ -41,18 +40,6 @@ func (l *Loader) Load(path string) error {
 	return nil
 }
 
-type UsersLoad struct {
-	Users []*models.User `json:"users"`
-}
-
-type LocationsLoad struct {
-	Locations []*models.Location `json:"locations"`
-}
-
-type VisitsLoad struct {
-	Visits []*models.Visit `json:"visits"`
-}
-
 func (l *Loader) loadFile(file *zip.File) error {
 	fc, err := file.Open()
 	if err != nil {
@@ -76,14 +63,14 @@ func (l *Loader) loadFile(file *zip.File) error {
 
 func (l *Loader) loadUsers(reader io.Reader) error {
 	var obj UsersLoad
-	d := json.NewDecoder(reader)
-	err := d.Decode(&obj)
+	d := ffjson.NewDecoder()
+	err := d.DecodeReader(reader, &obj)
 	if err != nil {
 		return err
 	}
 
 	for _, item := range obj.Users {
-		l.repo.SaveUser(item)
+		l.repo.SaveUser(item.User())
 	}
 
 	return nil
@@ -91,8 +78,8 @@ func (l *Loader) loadUsers(reader io.Reader) error {
 
 func (l *Loader) loadLocations(reader io.Reader) error {
 	var obj LocationsLoad
-	d := json.NewDecoder(reader)
-	err := d.Decode(&obj)
+	d := ffjson.NewDecoder()
+	err := d.DecodeReader(reader, &obj)
 	if err != nil {
 		return err
 	}
@@ -106,14 +93,14 @@ func (l *Loader) loadLocations(reader io.Reader) error {
 
 func (l *Loader) loadVisits(reader io.Reader) error {
 	var obj VisitsLoad
-	d := json.NewDecoder(reader)
-	err := d.Decode(&obj)
+	d := ffjson.NewDecoder()
+	err := d.DecodeReader(reader, &obj)
 	if err != nil {
 		return err
 	}
 
 	for _, item := range obj.Visits {
-		l.repo.SaveVisit(item)
+		l.repo.SaveVisit(item.Visit())
 	}
 
 	return nil

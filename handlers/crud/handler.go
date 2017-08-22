@@ -1,7 +1,7 @@
 package crud
 
 import (
-	"encoding/json"
+	"github.com/pquerna/ffjson/ffjson"
 	"github.com/ykhrustalev/highloadcup/handlers/helpers"
 	"github.com/ykhrustalev/highloadcup/repos"
 	"net/http"
@@ -14,6 +14,7 @@ type Adapter interface {
 	New() interface{}
 	NewPartial() interface{}
 	Get(id int) (interface{}, bool)
+	GetRaw(id int) (interface{}, bool)
 	Update(interface{}, interface{}) error
 	Add(interface{}) error
 }
@@ -85,13 +86,13 @@ func (r *Handler) Get(adapter Adapter, w http.ResponseWriter, req *http.Request)
 		return
 	}
 
-	item, found := adapter.Get(id)
+	item, found := adapter.GetRaw(id)
 	if !found {
 		http.Error(w, ErrorNotFound.Error(), http.StatusNotFound)
 		return
 	}
 
-	helpers.WriteResponse(w, helpers.ToJson(item))
+	helpers.WriteResponseJson(w, item)
 }
 
 func (r *Handler) Update(adapter Adapter, w http.ResponseWriter, req *http.Request) {
@@ -109,8 +110,8 @@ func (r *Handler) Update(adapter Adapter, w http.ResponseWriter, req *http.Reque
 
 	source := adapter.NewPartial()
 
-	decoder := json.NewDecoder(req.Body)
-	err = decoder.Decode(source)
+	decoder := ffjson.NewDecoder()
+	err = decoder.DecodeReader(req.Body, source)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -129,8 +130,8 @@ func (r *Handler) Update(adapter Adapter, w http.ResponseWriter, req *http.Reque
 func (r *Handler) Add(adapter Adapter, w http.ResponseWriter, req *http.Request) {
 	target := adapter.New()
 
-	decoder := json.NewDecoder(req.Body)
-	err := decoder.Decode(target)
+	decoder := ffjson.NewDecoder()
+	err := decoder.DecodeReader(req.Body, target)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
