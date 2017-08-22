@@ -1,6 +1,8 @@
 package highloadcup
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"github.com/ykhrustalev/highloadcup/data_loader"
 	"github.com/ykhrustalev/highloadcup/handlers"
@@ -9,10 +11,26 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"runtime/pprof"
+	"syscall"
 	"time"
 )
 
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+
 func Server() {
+
+	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	t0 := time.Now()
 
 	repo := repos.NewRepo()
@@ -45,5 +63,18 @@ func Server() {
 	fmt.Printf("booted in %d seconds\n", t1.Unix()-t0.Unix())
 
 	fmt.Printf("listen on %s\n", port)
-	http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	server := &http.Server{Addr: fmt.Sprintf(":%s", port), Handler: nil}
+
+	signalChannel := make(chan os.Signal, 2)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		sig := <-signalChannel
+		switch sig {
+		case syscall.SIGTERM, syscall.SIGKILL, syscall.SIGQUIT, os.Interrupt:
+			fmt.Println("exiting")
+			server.Shutdown(context.Background())
+		}
+	}()
+
+	server.ListenAndServe()
 }
