@@ -24,7 +24,7 @@ func (h *Users) Prefix() string {
 }
 
 func (h *Users) New() interface{} {
-	return &models.User{}
+	return &models.UserRaw{}
 }
 
 func (h *Users) NewPartial() interface{} {
@@ -54,7 +54,7 @@ func (h *Users) Update(theTarget interface{}, theSource interface{}) error {
 }
 
 func (h *Users) Add(theTarget interface{}) error {
-	target := theTarget.(*models.User)
+	target := theTarget.(*models.UserRaw).User()
 
 	//_, found := h.repo.GetUser(target.Id)
 	//if found {

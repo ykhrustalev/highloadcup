@@ -24,7 +24,7 @@ func (h *Visits) Prefix() string {
 }
 
 func (h *Visits) New() interface{} {
-	return &models.Visit{}
+	return &models.VisitRaw{}
 }
 
 func (h *Visits) NewPartial() interface{} {
@@ -54,7 +54,7 @@ func (h *Visits) Update(theTarget interface{}, theSource interface{}) error {
 }
 
 func (h *Visits) Add(theTarget interface{}) error {
-	target := theTarget.(*models.Visit)
+	target := theTarget.(*models.VisitRaw).Visit()
 
 	//_, found := h.repo.GetVisit(target.Id)
 	//if found {
