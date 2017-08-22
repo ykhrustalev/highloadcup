@@ -1,7 +1,7 @@
 package models
 
 import (
-	"net/url"
+	"github.com/valyala/fasthttp"
 	"strconv"
 	"time"
 )
@@ -13,10 +13,10 @@ type VisitsFilter struct {
 	ToDistance *int       // возвращать только те места, у которых расстояние от города меньше этого параметра
 }
 
-func VisitsFilterFromValues(values *url.Values) (*VisitsFilter, error) {
+func VisitsFilterFromValues(values *fasthttp.Args) (*VisitsFilter, error) {
 	filter := &VisitsFilter{}
 
-	fromDate := values.Get("fromDate")
+	fromDate := string(values.Peek("fromDate"))
 	if fromDate != "" {
 		values, err := strconv.ParseInt(fromDate, 10, 64)
 		if err != nil {
@@ -25,7 +25,7 @@ func VisitsFilterFromValues(values *url.Values) (*VisitsFilter, error) {
 		filter.SetFromDate(values)
 	}
 
-	toDate := values.Get("toDate")
+	toDate := string(values.Peek("toDate"))
 	if toDate != "" {
 		value, err := strconv.ParseInt(toDate, 10, 64)
 		if err != nil {
@@ -34,12 +34,12 @@ func VisitsFilterFromValues(values *url.Values) (*VisitsFilter, error) {
 		filter.SetToDate(value)
 	}
 
-	country := values.Get("country")
+	country := string(values.Peek("country"))
 	if country != "" {
 		filter.Country = &country
 	}
 
-	toDistance := values.Get("toDistance")
+	toDistance := string(values.Peek("toDistance"))
 	if toDistance != "" {
 		toDistanceInt, err := strconv.Atoi(toDistance)
 		if err != nil {

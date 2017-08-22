@@ -3,7 +3,7 @@ package highloadcup
 import (
 	"github.com/ykhrustalev/highloadcup/handlers"
 	"github.com/ykhrustalev/highloadcup/handlers/crud"
-	"net/http"
+	"github.com/valyala/fasthttp"
 )
 
 type Router struct {
@@ -24,21 +24,22 @@ func NewRouter(
 	}
 }
 
-func (r *Router) Handle(w http.ResponseWriter, req *http.Request) {
-	ok := r.listVisitsHandler.Handle(w, req)
+func (r *Router) Handle(ctx *fasthttp.RequestCtx) {
+
+	ok := r.listVisitsHandler.Handle(ctx)
 	if ok {
 		return
 	}
 
-	ok = r.locationsAvgHandler.Handle(w, req)
+	ok = r.locationsAvgHandler.Handle(ctx)
 	if ok {
 		return
 	}
 
-	ok = r.crudHandler.Handle(w, req)
+	ok = r.crudHandler.Handle(ctx)
 	if ok {
 		return
 	}
 
-	http.Error(w, "method not supported", http.StatusNotFound)
+	ctx.Error("not found", fasthttp.StatusNotFound)
 }

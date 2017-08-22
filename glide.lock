@@ -1,6 +1,24 @@
-hash: 9039db913e70dfeb47ef8d2631161030209bd12a0910458371dafc624fff88e0
-updated: 2017-08-22T09:20:31.910472464+03:00
+hash: 98fcb5d469f0411358bae9696ff24f1f9ece3c8ea9968b8fa8a9812983b0fb6d
+updated: 2017-08-22T13:13:09.071231699+03:00
 imports:
+- name: github.com/klauspost/compress
+  version: 6c8db69c4b49dd4df1fff66996cf556176d0b9bf
+  subpackages:
+  - flate
+  - gzip
+  - zlib
+- name: github.com/klauspost/cpuid
+  version: ae7887de9fa5d2db4eaa8174a7eff2c1ac00f2da
+- name: github.com/klauspost/crc32
+  version: bab58d77464aa9cf4e84200c3276da0831fe0c03
 - name: github.com/pquerna/ffjson
   version: 9a5203b7a07166f217f5f8177d5b16177acad3b2
+  subpackages:
+  - ffjson
+  - fflib/v1
+  - fflib/v1/internal
+- name: github.com/valyala/fasthttp
+  version: d42167fd04f636e20b005e9934159e95454233c7
+  subpackages:
+  - fasthttputil
 testImports: []

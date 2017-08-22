@@ -4,7 +4,7 @@ import (
 	"github.com/ykhrustalev/highloadcup/handlers/helpers"
 	"github.com/ykhrustalev/highloadcup/models"
 	"github.com/ykhrustalev/highloadcup/repos"
-	"net/http"
+	"github.com/valyala/fasthttp"
 )
 
 type Locations struct {
@@ -31,7 +31,7 @@ func (h *Locations) NewPartial() interface{} {
 	return &models.LocationPartial{}
 }
 
-func (h *Locations) PathToId(req *http.Request) (int, error) {
+func (h *Locations) PathToId(req *fasthttp.Request) (int, error) {
 	return helpers.PathToIdPrefix(req, h.prefix)
 }
 

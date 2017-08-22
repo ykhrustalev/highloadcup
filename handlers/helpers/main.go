@@ -1,20 +1,19 @@
 package helpers
 
 import (
-	"fmt"
-	"net/http"
 	"github.com/pquerna/ffjson/ffjson"
+	"github.com/valyala/fasthttp"
 )
 
-func WriteResponseJson(w http.ResponseWriter, obj interface{}) {
+func WriteResponseJson(ctx *fasthttp.RequestCtx, obj interface{}) {
 	buf, _ := ffjson.Marshal(obj)
-	WriteResponse(w, buf)
+	WriteResponse(ctx, buf)
 	ffjson.Pool(buf)
 }
 
-func WriteResponse(w http.ResponseWriter, contents []byte) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(contents)))
-	w.WriteHeader(http.StatusOK)
-	w.Write(contents)
+func WriteResponse(ctx *fasthttp.RequestCtx, contents []byte) {
+	ctx.SetContentType("application/json")
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.Response.Header.SetContentLength(len(contents))
+	ctx.Write(contents)
 }

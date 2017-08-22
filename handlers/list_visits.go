@@ -7,6 +7,7 @@ import (
 	"github.com/ykhrustalev/highloadcup/repos"
 	"net/http"
 	"strings"
+	"github.com/valyala/fasthttp"
 )
 
 type ListVisitsHandler struct {
@@ -23,43 +24,44 @@ func NewListVisitsHandler(repo *repos.Repo) *ListVisitsHandler {
 	}
 }
 
-func (h *ListVisitsHandler) PathToIdVisits(req *http.Request) (int, error) {
+func (h *ListVisitsHandler) PathToIdVisits(req *fasthttp.Request) (int, error) {
 	return helpers.PathToId(req, h.prefix, h.suffix)
 }
 
-func (h *ListVisitsHandler) Handle(w http.ResponseWriter, req *http.Request) bool {
-	if req.Method != "GET" {
+func (h *ListVisitsHandler) Handle(ctx *fasthttp.RequestCtx) bool {
+	path := string(ctx.Path())
+	method := string(ctx.Method())
+
+	if method != "GET" {
 		return false
 	}
-
-	path := req.URL.Path
 
 	if !(strings.HasPrefix(path, h.prefix) && strings.HasSuffix(path, h.suffix)) {
 		return false
 	}
 
-	h.doHandle(w, req)
+	h.doHandle(ctx)
 
 	return true
 }
 
-func (h *ListVisitsHandler) doHandle(w http.ResponseWriter, req *http.Request) {
-	id, err := h.PathToIdVisits(req)
+func (h *ListVisitsHandler) doHandle(ctx *fasthttp.RequestCtx) {
+	id, err := h.PathToIdVisits(&ctx.Request)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		ctx.Error(err.Error(), http.StatusNotFound)
 		return
 	}
 
 	user, found := h.repo.GetUser(id)
 	if !found {
-		http.Error(w, crud.ErrorNotFound.Error(), http.StatusNotFound)
+		ctx.Error(crud.ErrorNotFound.Error(), http.StatusNotFound)
 		return
 	}
 
-	values := req.URL.Query()
-	filters, err := models.VisitsFilterFromValues(&values)
+	values := ctx.QueryArgs()
+	filters, err := models.VisitsFilterFromValues(values)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		ctx.Error(err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -67,5 +69,5 @@ func (h *ListVisitsHandler) doHandle(w http.ResponseWriter, req *http.Request) {
 		Visits: h.repo.FilterVisitsForUser(user.Id, filters),
 	}
 
-	helpers.WriteResponseJson(w, response)
+	helpers.WriteResponseJson(ctx, response)
 }

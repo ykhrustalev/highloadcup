@@ -1,7 +1,7 @@
 package models
 
 import (
-	"net/url"
+	"github.com/valyala/fasthttp"
 	"strconv"
 	"time"
 )
@@ -14,10 +14,10 @@ type LocationsAvgFilter struct {
 	Gender   *string    // учитывать оценки только мужчин или женщин
 }
 
-func LocationsAvgFilterFromValues(values *url.Values) (*LocationsAvgFilter, error) {
+func LocationsAvgFilterFromValues(values *fasthttp.Args) (*LocationsAvgFilter, error) {
 	filter := &LocationsAvgFilter{}
 
-	fromDate := values.Get("fromDate")
+	fromDate := string(values.Peek("fromDate"))
 	if fromDate != "" {
 		value, err := strconv.ParseInt(fromDate, 10, 64)
 		if err != nil {
@@ -26,7 +26,7 @@ func LocationsAvgFilterFromValues(values *url.Values) (*LocationsAvgFilter, erro
 		filter.SetFromDate(value)
 	}
 
-	toDate := values.Get("toDate")
+	toDate := string(values.Peek("toDate"))
 	if toDate != "" {
 		value, err := strconv.ParseInt(toDate, 10, 64)
 		if err != nil {
@@ -35,7 +35,7 @@ func LocationsAvgFilterFromValues(values *url.Values) (*LocationsAvgFilter, erro
 		filter.SetToDate(value)
 	}
 
-	fromAge := values.Get("fromAge")
+	fromAge := string(values.Peek("fromAge"))
 	if fromAge != "" {
 		value, err := strconv.ParseInt(fromAge, 10, 64)
 		if err != nil {
@@ -44,7 +44,7 @@ func LocationsAvgFilterFromValues(values *url.Values) (*LocationsAvgFilter, erro
 		filter.SetFromAge(value)
 	}
 
-	toAge := values.Get("toAge")
+	toAge := string(values.Peek("toAge"))
 	if toAge != "" {
 		value, err := strconv.ParseInt(toAge, 10, 64)
 		if err != nil {
@@ -53,7 +53,7 @@ func LocationsAvgFilterFromValues(values *url.Values) (*LocationsAvgFilter, erro
 		filter.SetToAge(value)
 	}
 
-	gender := values.Get("gender")
+	gender := string(values.Peek("gender"))
 	if gender != "" {
 		gender, err := ValidateGender(gender)
 		if err != nil {

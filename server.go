@@ -1,7 +1,6 @@
 package highloadcup
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"github.com/ykhrustalev/highloadcup/data_loader"
@@ -9,12 +8,12 @@ import (
 	"github.com/ykhrustalev/highloadcup/handlers/crud"
 	"github.com/ykhrustalev/highloadcup/repos"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"runtime/pprof"
 	"syscall"
 	"time"
+	"github.com/valyala/fasthttp"
 )
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
@@ -52,8 +51,6 @@ func Server() {
 		handlers.NewLocationsAvgHandler(repo),
 	)
 
-	http.HandleFunc("/", router.Handle)
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -63,7 +60,7 @@ func Server() {
 	fmt.Printf("booted in %d seconds\n", t1.Unix()-t0.Unix())
 
 	fmt.Printf("listen on %s\n", port)
-	server := &http.Server{Addr: fmt.Sprintf(":%s", port), Handler: nil}
+	server := &fasthttp.Server{Handler: router.Handle}
 
 	signalChannel := make(chan os.Signal, 2)
 	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
@@ -71,10 +68,9 @@ func Server() {
 		sig := <-signalChannel
 		switch sig {
 		case syscall.SIGTERM, syscall.SIGKILL, syscall.SIGQUIT, os.Interrupt:
-			fmt.Println("exiting")
-			server.Shutdown(context.Background())
+			fmt.Println("exiting, do nothing")
 		}
 	}()
 
-	server.ListenAndServe()
+	server.ListenAndServe(fmt.Sprintf(":%s", port))
 }

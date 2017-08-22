@@ -1,17 +1,19 @@
 package helpers
 
 import (
-	"net/http"
+	"github.com/valyala/fasthttp"
 	"strconv"
 	"strings"
 )
 
-func PathToIdPrefix(req *http.Request, prefix string) (int, error) {
+func PathToIdPrefix(req *fasthttp.Request, prefix string) (int, error) {
 	return PathToId(req, prefix, "")
 }
 
-func PathToId(req *http.Request, prefix string, suffix string) (int, error) {
-	idStr := strings.Replace(req.URL.Path, prefix, "", 1)
+func PathToId(req *fasthttp.Request, prefix string, suffix string) (int, error) {
+	path := string(req.URI().Path())
+
+	idStr := strings.Replace(path, prefix, "", 1)
 	idStr = strings.TrimRight(idStr, "/")
 	if suffix != "" {
 		idStr = strings.Replace(idStr, suffix, "", 1)
